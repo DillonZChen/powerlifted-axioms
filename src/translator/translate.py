@@ -5,7 +5,6 @@ import os
 import signal
 import sys
 import traceback
-
 from collections import defaultdict
 
 
@@ -21,8 +20,8 @@ import compile_types
 import complete_state
 import normalize
 import options
-import pddl_parser
 import pddl
+import pddl_parser
 import pddl_to_prolog
 import reachability
 import remove_predicates
@@ -137,6 +136,9 @@ def main():
     with timers.timing("Printing action schemas"):
         print_action_schemas(output, task, object_index, predicate_index, type_index)
 
+    with timers.timing("Printing axioms"):
+        print_axioms(output, task, object_index, predicate_index, type_index)
+
     print("Total translation time:", timer.get_cpu_time())
 
     return
@@ -147,8 +149,79 @@ def transform_into_unit_cost(task):
         action.cost = 1
 
 
+def print_axioms(output, task, object_index, predicate_index, type_index):
+    # Axioms are defined as follows
+    # [we do not handle partially instantiated axioms]
+    # - First, a canary and the number of axioms 
+    # - Then a list of axioms, each one having
+    #    - head predicate name
+    #    - head predicate index
+    #    - number of predicate parameters
+    #    - number of existential parameters
+    #    - number of body atoms
+    # - Then we list all predicate parameters, one in each line, containing
+    #    - parameter name
+    #    - parameter index
+    #    - index of the parameter type
+    # - Then we list all existential parameters, one in each line, containing
+    #    - parameter name
+    #    - parameter index
+    #    - index of the parameter type
+    # - Then we list all body atoms
+    #    - predicate name
+    #    - predicate index
+    #    - boolean variable saying if its negated or not
+    #    - number of predicate arguments
+    #    - list of pairs in the format (O, i), where O is `p` if it is a predicate
+    # variable, and `e` if it is an existential variable `i` is the parameter index
+    task_axioms = list(task.axioms)
+    task_axioms.sort(key=lambda ax: ax.name)
+    print("AXIOMS %d" % len(task_axioms), file=output)
+    for axiom in task_axioms:
+        n_parameters = len(axiom.parameters)
+        n_predicate_parameters = axiom.num_external_parameters
+        n_existential_parameters = n_parameters - n_predicate_parameters
+        parameter_index = {}
+        body = axiom.condition.parts
+        print(
+            axiom.name, 
+            predicate_index[axiom.name], 
+            n_predicate_parameters, 
+            n_existential_parameters,
+            len(body),
+            file=output,
+        )
+        for index, par in enumerate(axiom.parameters):
+            parameter_index[par.name] = index
+            print(par.name, index, type_index[par.type_name], file=output)
+        for atom in body:
+            if isinstance(atom, pddl.Atom):
+                is_negated = 0
+            elif isinstance(atom, pddl.NegatedAtom):
+                is_negated = 1
+            else:
+                raise ValueError("Axiom body contains a non-atom.")
+            body_args = []
+            for x in atom.args:
+                index = parameter_index[x]
+                if index < n_predicate_parameters:
+                    # predicate parameter
+                    body_args.append(('p', index))
+                else:
+                    # existential parameter
+                    body_args.append(('e', index))
+            print(
+                atom.predicate,
+                predicate_index[atom.predicate],
+                is_negated,
+                len(atom.args),
+                " ".join(f"{O} {i}" for O, i in body_args),
+                file=output,
+            )
+            
+
 def print_action_schemas(output, task, object_index, predicate_index, type_index):
-    # Action schemas are defined as follow
+    # Action schemas are defined as follows
     # - First, a canary and the number of action schemas
     # - Then a list of action schemas, each one having
     #    - action name
@@ -339,6 +412,7 @@ def print_predicates(output, task, predicate_index, type_index):
         predicate_index[p.name] = index
         print("%s %d %d %d" % (p.name, index, len(p.arguments), p.static), file=output)
         if not p.static:
+            print(p)
             # If p is fluent, then we care about the types of its parameters
             args = []
             # Assertion catches predicates with 'either'

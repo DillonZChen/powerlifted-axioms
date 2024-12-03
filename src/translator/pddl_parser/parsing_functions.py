@@ -16,7 +16,7 @@ import pddl
 
 UNSUPPORTED_FEATURES = ["imply",
                         "forall",
-                        "exists",
+                        # "exists",  # for axioms to work
                         "when"]
 def naturals_iterator():
     n = 0
@@ -452,10 +452,8 @@ def parse_domain_pddl(domain_pddl):
     the_actions = []
     for entry in entries:
         if entry[0] == ":derived":
-            #axiom = parse_axiom(entry, type_dict, predicate_dict)
-            #the_axioms.append(axiom)
-            print("ERROR: Derived predicates are not supported.", file=sys.stderr)
-            sys.exit(-1)
+            axiom = parse_axiom(entry, type_dict, predicate_dict)
+            the_axioms.append(axiom)
         else:
             action = parse_action(entry, type_dict, predicate_dict)
             if action is not None:

@@ -14,6 +14,12 @@ def remove_unused_predicate_symbols(task):
     for p in task.init:
         pred = p.predicate
         used_predicates.add(pred)
+    for p in task.axioms:
+        pred = p.name
+        used_predicates.add(pred)
+        for part in p.condition.parts:
+            used_predicates.add(part.predicate)
+
     new_predicates = []
     for pred in task.predicates:
         if pred.name in used_predicates:
