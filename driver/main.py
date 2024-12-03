@@ -5,12 +5,13 @@ import subprocess
 import sys
 from pathlib import Path
 
-from build import build, PROJECT_ROOT
+from build import PROJECT_ROOT, build
 
 from . import arguments, portfolio_runner
-from .utils import get_elapsed_time, remove_temporary_files
-from .single_search_runner import run_single_search
 from .preprocessor import preprocess_cpddl
+from .single_search_runner import run_single_search
+from .utils import get_elapsed_time, remove_temporary_files
+
 
 def validate(domain_name, instance_name, planfile):
     plan = Path(planfile)

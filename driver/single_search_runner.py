@@ -1,6 +1,7 @@
 import os
 import subprocess
 
+
 def run_single_search(build_dir, time, translator_file, search, evaluator, generator, seed, plan_file, extra):
         cmd = [os.path.join(build_dir, 'search', 'search'),
                '-f', translator_file,

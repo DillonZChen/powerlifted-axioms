@@ -1,7 +1,7 @@
-
 from .limits import round_time_limit
-from .utils import get_elapsed_time, remove_temporary_files
 from .single_search_runner import run_single_search
+from .utils import get_elapsed_time, remove_temporary_files
+
 
 def compute_run_time(timeout, relative_times, pos):
     '''
