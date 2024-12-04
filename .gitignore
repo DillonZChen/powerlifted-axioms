@@ -16,3 +16,4 @@ reports/
 local-tests/
 *.out
 *.bak
+*.lifted

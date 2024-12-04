@@ -412,7 +412,6 @@ def print_predicates(output, task, predicate_index, type_index):
         predicate_index[p.name] = index
         print("%s %d %d %d" % (p.name, index, len(p.arguments), p.static), file=output)
         if not p.static:
-            print(p)
             # If p is fluent, then we care about the types of its parameters
             args = []
             # Assertion catches predicates with 'either'

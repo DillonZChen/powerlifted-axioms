@@ -1,11 +1,13 @@
 #include "parser.h"
 #include "action_schema.h"
+#include "datalog/rules/rule_base.h"
 #include "goal_condition.h"
 #include "task.h"
 
 #include <boost/algorithm/string.hpp>
 
 #include <iostream>
+#include <memory>
 #include <vector>
 
 using namespace std;
@@ -82,7 +84,64 @@ bool parse(Task &task, const ifstream &in)
     cout << "Total number of action schemas: " << number_action_schemas << endl;
     parse_action_schemas(task, number_action_schemas);
 
+
+    int number_axioms;
+    cin >> canary >> number_axioms;
+    if (not is_next_section_correct(canary, "AXIOMS")) {
+        return false;
+    }
+    cout << "Total number of axioms: " << number_axioms << endl;
+    parse_axioms(task, number_axioms);
+
     return true;
+}
+
+void parse_axioms(Task &task, int number_axioms)
+{
+    std::vector<std::unique_ptr<datalog::RuleBase>> axioms;
+    for (int i = 0; i < number_axioms; ++i) {
+        string name;
+        int head_index, num_pred_params, num_exist_params, num_body_atoms;
+        cin >> name >> head_index >> num_pred_params >> num_exist_params >> num_body_atoms;
+        assert(task.get_predicate_name(head_index) == name);
+
+        // parameters
+        vector<Parameter> predicate_parameters;
+        vector<Parameter> existential_parameters;
+        for (int j = 0; j < num_pred_params; ++j) {
+            string param_name;
+            int index, type;
+            cin >> param_name >> index >> type;
+            predicate_parameters.emplace_back(param_name, index, type);
+        }
+        for (int j = 0; j < num_exist_params; ++j) {
+            string param_name;
+            int index, type;
+            cin >> param_name >> index >> type;
+            existential_parameters.emplace_back(param_name, index, type);
+        }
+
+        // rule head
+        // TODO construct rule head
+
+        // rule body
+        vector<datalog::DatalogLiteral> body;
+        for (int j = 0; j < num_body_atoms; ++j) {
+            string atom_name;
+            int predicate_index, num_args;
+            bool negated;
+            cin >> atom_name >> predicate_index >> negated >> num_args;
+            vector<int> arg_indices;
+            for (int k = 0; k < num_args; ++k) {
+                int arg_index;
+                char parameter_type;
+                cin >> parameter_type >> arg_index;
+                arg_indices.push_back(arg_index);
+            }
+            // TODO add datalog atom
+        }
+    }
+    task.initialize_axioms(axioms);
 }
 
 void parse_action_schemas(Task &task, int number_action_schemas)
@@ -105,7 +164,8 @@ void parse_action_schemas(Task &task, int number_action_schemas)
             cin >> param_name >> index >> type;
             parameters.emplace_back(param_name, index, type);
         }
-        if (num_fresh_vars > 0) task.flag_object_creation();
+        if (num_fresh_vars > 0)
+            task.flag_object_creation();
         for (int j = 0; j < num_fresh_vars; ++j) {
             string var_name;
             int index, type;
@@ -124,8 +184,8 @@ void parse_action_schemas(Task &task, int number_action_schemas)
                     positive_nul_precond[index] = true;
                 else
                     negative_nul_precond[index] = true;
-
-            }else if (boost::iequals(precond_name, "=")){
+            }
+            else if (boost::iequals(precond_name, "=")) {
                 int id1, id2;
                 char c, d;
                 cin >> c >> id1 >> d >> id2;
@@ -133,11 +193,10 @@ void parse_action_schemas(Task &task, int number_action_schemas)
                 vector<Argument> arguments;
                 arguments.emplace_back(id1, c == 'c', false);
                 arguments.emplace_back(id2, d == 'c', false);
-                static_preconditions.emplace_back(std::move(arguments),
-                                                  std::move(precond_name),
-                                                  index, negated);
-
-            }else{
+                static_preconditions.emplace_back(
+                    std::move(arguments), std::move(precond_name), index, negated);
+            }
+            else {
                 vector<Argument> arguments;
                 for (int k = 0; k < arguments_size; ++k) {
                     char c;
@@ -157,7 +216,8 @@ void parse_action_schemas(Task &task, int number_action_schemas)
                         exit(-1);
                     }
                 }
-                preconditions.emplace_back(std::move(arguments), std::move(precond_name), index, negated);
+                preconditions.emplace_back(
+                    std::move(arguments), std::move(precond_name), index, negated);
             }
         }
         for (int j = 0; j < eff_size; ++j) {
@@ -241,7 +301,7 @@ void parse_goal(Task &task, int goal_size)
 
 void parse_initial_state(Task &task, int initial_state_size)
 {
-    //StaticInformation static_info(task.predicates.size());
+    // StaticInformation static_info(task.predicates.size());
     for (int i = 0; i < initial_state_size; ++i) {
         string name;
         int index;
@@ -262,7 +322,7 @@ void parse_initial_state(Task &task, int initial_state_size)
                 task.static_info.add_tuple(predicate_index, args);
         }
     }
-    //task.set_static_info(static_info);
+    // task.set_static_info(static_info);
 }
 
 void parse_objects(Task &task, int number_objects)

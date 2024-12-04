@@ -5,6 +5,7 @@
 
 #include "../datalog_atom.h"
 #include "../datalog_fact.h"
+#include "../datalog_literal.h"
 
 #include "../annotations/annotation.h"
 

@@ -6,7 +6,9 @@
 #include "object.h"
 #include "predicate.h"
 #include "states/state.h"
+#include "datalog/rules/rule_base.h"
 
+#include <memory>
 #include <ostream>
 #include <string>
 #include <unordered_map>
@@ -25,6 +27,7 @@
 
 class Task {
 
+    std::vector<std::unique_ptr<datalog::RuleBase>> axioms;
     std::vector<ActionSchema> action_schemas;
     GoalCondition goal;
     bool object_creation;
@@ -40,6 +43,7 @@ public:
     Task(const std::string &domain_name, const std::string &task_name)
         : domain_name(domain_name), task_name(task_name) {
         // Create class only with task and domain names
+        object_creation = false;
     }
 
     const std::string &get_domain_name() const { return domain_name; }
@@ -65,6 +69,8 @@ public:
                                std::unordered_set<int> negative_nullary_goals);
 
     void initialize_action_schemas(const std::vector<ActionSchema> &action_list);
+
+    void initialize_axioms(const std::vector<std::unique_ptr<datalog::RuleBase>> &rules);
 
     const GoalCondition &get_goal() const {
         return goal;
