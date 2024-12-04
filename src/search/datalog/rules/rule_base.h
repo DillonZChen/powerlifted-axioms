@@ -96,7 +96,6 @@ public:
                 ground_effect = false;
             }
         }
-
     };
 
     virtual ~RuleBase() = default;

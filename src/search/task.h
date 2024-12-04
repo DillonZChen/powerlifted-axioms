@@ -6,7 +6,7 @@
 #include "object.h"
 #include "predicate.h"
 #include "states/state.h"
-#include "datalog/rules/rule_base.h"
+#include "datalog/rules/generic_rule.h"
 
 #include <memory>
 #include <ostream>
@@ -27,7 +27,7 @@
 
 class Task {
 
-    std::vector<std::unique_ptr<datalog::RuleBase>> axioms;
+    std::vector<std::unique_ptr<datalog::GenericRule>> axioms;
     std::vector<ActionSchema> action_schemas;
     GoalCondition goal;
     bool object_creation;
@@ -70,7 +70,7 @@ public:
 
     void initialize_action_schemas(const std::vector<ActionSchema> &action_list);
 
-    void initialize_axioms(std::vector<std::unique_ptr<datalog::RuleBase>> &rules);
+    void initialize_axioms(std::vector<std::unique_ptr<datalog::GenericRule>> &rules);
 
     const GoalCondition &get_goal() const {
         return goal;

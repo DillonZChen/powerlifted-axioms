@@ -105,7 +105,7 @@ void Task::initialize_action_schemas(const std::vector<ActionSchema> &action_lis
     action_schemas = action_list;
 }
 
-void Task::initialize_axioms(std::vector<std::unique_ptr<datalog::RuleBase>> &rules)
+void Task::initialize_axioms(std::vector<std::unique_ptr<datalog::GenericRule>> &rules)
 {
     axioms = std::move(rules);
 }

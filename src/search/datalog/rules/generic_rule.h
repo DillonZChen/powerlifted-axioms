@@ -21,6 +21,8 @@ public:
     {
     }
 
+    GenericRule(DatalogAtom eff, std::vector<DatalogLiteral> c) : RuleBase(0, std::move(eff), std::move(c), nullptr) {};
+
     void clean_up() override {}
 
     int get_type() const override { return GENERIC; }

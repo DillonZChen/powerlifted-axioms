@@ -6,7 +6,9 @@
 #include <boost/algorithm/string.hpp>
 
 #include <iostream>
+#include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
 using namespace std;
@@ -97,6 +99,7 @@ bool parse(Task &task, const ifstream &in)
 
 void parse_axioms(Task &task, int number_axioms)
 {
+    std::vector<std::unique_ptr<datalog::GenericRule>> axioms;
     for (int i = 0; i < number_axioms; ++i) {
         string name;
         int head_index, num_pred_params, num_exist_params, num_body_atoms;
@@ -104,23 +107,29 @@ void parse_axioms(Task &task, int number_axioms)
         assert(task.get_predicate_name(head_index) == name);
 
         // parameters
+        std::vector<std::pair<int, int>> head_args;
         vector<Parameter> predicate_parameters;
         vector<Parameter> existential_parameters;
+        std::map<int, int> index_to_type;
         for (int j = 0; j < num_pred_params; ++j) {
             string param_name;
             int index, type;
             cin >> param_name >> index >> type;
+            index_to_type[index] = type;
             predicate_parameters.emplace_back(param_name, index, type);
+            head_args.emplace_back(index, type);
         }
         for (int j = 0; j < num_exist_params; ++j) {
             string param_name;
             int index, type;
             cin >> param_name >> index >> type;
+            index_to_type[index] = type;
             existential_parameters.emplace_back(param_name, index, type);
         }
 
         // rule head
-        // TODO construct rule head
+        datalog::Arguments arguments = datalog::Arguments(head_args);
+        datalog::DatalogAtom head(arguments, head_index, false);
 
         // rule body
         vector<datalog::DatalogLiteral> body;
@@ -129,17 +138,19 @@ void parse_axioms(Task &task, int number_axioms)
             int predicate_index, num_args;
             bool negated;
             cin >> atom_name >> predicate_index >> negated >> num_args;
-            vector<int> arg_indices;
+            vector<pair<int, int>> atom_args;
             for (int k = 0; k < num_args; ++k) {
                 int arg_index;
                 char parameter_type;
                 cin >> parameter_type >> arg_index;
-                arg_indices.push_back(arg_index);
+                atom_args.push_back(make_pair(arg_index, index_to_type[arg_index]));
             }
-            // TODO add datalog atom
+            datalog::DatalogAtom atom(datalog::Arguments(atom_args), predicate_index, false);
+            datalog::DatalogLiteral literal(negated, atom);
+            body.push_back(literal);
         }
+        axioms.push_back(std::make_unique<datalog::GenericRule>(head, body));
     }
-    std::vector<std::unique_ptr<datalog::RuleBase>> axioms;
     task.initialize_axioms(axioms);
 }
 
