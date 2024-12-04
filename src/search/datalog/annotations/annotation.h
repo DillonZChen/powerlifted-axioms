@@ -5,11 +5,6 @@
 
 #include "../ground_rule.h"
 
-
-#include "../rules/rule_base.h"
-
-#include "../../task.h"
-
 namespace datalog {
 
 class Datalog;
@@ -25,10 +20,6 @@ public:
 
     bool operator!=(const Annotation &other) {return !(*this == other);}
 };
-
-
-using AnnotationGenerator = std::function<std::unique_ptr<Annotation>(int, const Task&)>;
-
 }
 
 #endif //SEARCH_DATALOG_ANNOTATIONS_ANNOTATION_H_

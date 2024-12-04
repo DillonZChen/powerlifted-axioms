@@ -87,12 +87,12 @@ std::vector<std::vector<int>> get_components(std::unique_ptr<RuleBase> &rule) {
 
     int condition_counter = 0;
     for (const auto &conditions : rule->get_conditions()) {
-        if (conditions.is_nullary() or conditions.is_ground()) {
+        if (conditions.atom.is_nullary() or conditions.atom.is_ground()) {
             g.add_node(condition_counter);
         } else {
             g.add_node(condition_counter);
             for (size_t j = condition_counter + 1; j < rule->get_conditions().size(); ++j) {
-                if (rule->get_conditions()[condition_counter].share_variables(rule->get_conditions()[j])) {
+                if (rule->get_conditions()[condition_counter].atom.share_variables(rule->get_conditions()[j].atom)) {
                     g.add_edge(condition_counter, j);
                     g.add_edge(j, condition_counter);
                 }
@@ -127,7 +127,7 @@ DatalogAtom Datalog::split_connected_component(std::unique_ptr<RuleBase> &origin
             counter++;
         }
         original_rule->update_variable_source_table(std::move(new_source));
-        return original_rule->get_conditions()[component[0]];
+        return original_rule->get_conditions()[component[0]].atom;
     }
 
     std::string predicate_name = "p$" + std::to_string(predicate_names.size());
@@ -135,8 +135,8 @@ DatalogAtom Datalog::split_connected_component(std::unique_ptr<RuleBase> &origin
     map_new_predicates_to_idx.emplace(predicate_name, idx);
     predicate_names.push_back(predicate_name);
 
-    std::vector<DatalogAtom> original_conditions = original_rule->get_conditions();
-    std::vector<DatalogAtom> new_rule_conditions;
+    std::vector<DatalogLiteral> original_conditions = original_rule->get_conditions();
+    std::vector<DatalogLiteral> new_rule_conditions;
     new_rule_conditions.reserve(component.size());
     for (size_t id : component) {
         new_rule_conditions.push_back(original_conditions[id]);
@@ -176,12 +176,13 @@ void Datalog::split_into_connected_components(std::unique_ptr<RuleBase> &rule, s
         }
     }
 
-    std::vector<DatalogAtom> original_conditions = rule->get_conditions();
-    std::vector<DatalogAtom> new_rule_conditions;
+    std::vector<DatalogLiteral> original_conditions = rule->get_conditions();
+    std::vector<DatalogLiteral> new_rule_conditions;
 
     int component_counter = 0;
     for (const auto &component : components) {
-        new_rule_conditions.push_back(split_connected_component(rule, component, new_rules, component_counter++));
+        DatalogAtom new_atom = split_connected_component(rule, component, new_rules, component_counter++);
+        new_rule_conditions.push_back(DatalogLiteral(0, new_atom));
     }
 
     rule->set_conditions(new_rule_conditions);

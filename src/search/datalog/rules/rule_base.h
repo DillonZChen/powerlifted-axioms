@@ -64,7 +64,7 @@ enum RuleType { GENERIC, JOIN, PRODUCT, PROJECT };
 class RuleBase {
 protected:
     DatalogAtom effect;
-    std::vector<DatalogAtom> conditions;
+    std::vector<DatalogLiteral> conditions;
     int weight;
     int index;
     bool ground_effect;
@@ -82,7 +82,7 @@ protected:
 
 
 public:
-    RuleBase(int weight, DatalogAtom eff, std::vector<DatalogAtom> c, std::unique_ptr<Annotation> annotation) :
+    RuleBase(int weight, DatalogAtom eff, std::vector<DatalogLiteral> c, std::unique_ptr<Annotation> annotation) :
         effect(std::move(eff)),
         conditions(std::move(c)),
         weight(weight),
@@ -126,7 +126,7 @@ public:
         return effect;
     }
 
-    const std::vector<DatalogAtom> &get_conditions() const {
+    const std::vector<DatalogLiteral> &get_conditions() const {
         return conditions;
     }
 
@@ -141,7 +141,7 @@ public:
     virtual int get_type() const = 0;
 
     const Arguments &get_condition_arguments(int i) const {
-        return conditions[i].get_arguments();
+        return conditions[i].atom.get_arguments();
     }
 
     const Arguments &get_effect_arguments() const {
@@ -165,15 +165,15 @@ public:
     }
 
     void update_conditions(DatalogAtom new_atom,
-                           const std::vector<DatalogAtom> &new_rule_conditions,
+                           const std::vector<DatalogLiteral> &new_rule_conditions,
                            const VariableSource &variable_source_new_rule,
                            std::vector<size_t> &&body_ids);
 
     void update_single_condition_and_variable_source_table(size_t j, DatalogAtom atom);
 
-    void set_conditions(std::vector<DatalogAtom> new_rule_conditions);
+    void set_conditions(std::vector<DatalogLiteral> new_rule_conditions);
 
-    void replace_single_condition(size_t j, DatalogAtom atom) ;
+    void replace_single_condition(size_t j, DatalogLiteral atom) ;
 
     void output_variable_table() const;
 
@@ -190,8 +190,8 @@ public:
 
     std::vector<int> get_variables_in_body() const {
         std::vector<int> variables;
-        for (const DatalogAtom &atom : conditions) {
-            for (const Term &term : atom.get_arguments()) {
+        for (const DatalogLiteral &literal : conditions) {
+            for (const Term &term : literal.atom.get_arguments()) {
                 if (!term.is_object()) {
                     variables.push_back(term.get_index());
                 }
@@ -211,7 +211,7 @@ public:
     void set_specific_condition(size_t i, DatalogAtom atom);
 
     void update_condition_arguments(int i, std::vector<Term> &terms) {
-        conditions[i].update_arguments(terms);
+        conditions[i].atom.update_arguments(terms);
     }
 
     void update_effect_arguments(std::vector<Term> &terms) {

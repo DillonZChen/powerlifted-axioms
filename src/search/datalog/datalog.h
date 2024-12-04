@@ -2,6 +2,7 @@
 #define SEARCH_DATALOG_DATALOG_H_
 
 #include "rules/rule_base.h"
+#include "annotations/annotation_generator.h"
 
 #include "../atom.h"
 #include "../task.h"
@@ -35,11 +36,11 @@ class Datalog {
 
     void generate_action_effect_rules(const ActionSchema &schema, AnnotationGenerator &annotation_generator);
 
-    std::vector<DatalogAtom> get_action_effect_rule_body(const ActionSchema &schema);
+    std::vector<DatalogLiteral> get_action_effect_rule_body(const ActionSchema &schema);
     void get_nullary_atoms_from_vector(const std::vector<bool> &nullary_predicates_in_precond,
                                        std::vector<size_t> &nullary_preconds) const;
-    std::vector<DatalogAtom> get_atoms_in_rule_body(const ActionSchema &schema,
-                                                    const std::vector<size_t> &nullary_preconds) const;
+    std::vector<DatalogLiteral> get_atoms_in_rule_body(const ActionSchema &schema,
+                                                       const std::vector<size_t> &nullary_preconds) const;
 
 
     int get_next_auxiliary_predicate_idx() {
@@ -71,10 +72,10 @@ class Datalog {
 
     Arguments get_conditions_arguments(const std::vector<DatalogAtom> &conditions);
 
-    Arguments get_relevant_joining_arguments_from_component(const DatalogAtom &rule_head, const std::vector<DatalogAtom> &conditions);
+    Arguments get_relevant_joining_arguments_from_component(const DatalogAtom &rule_head, const std::vector<DatalogLiteral> &conditions);
 
     Arguments get_relevant_arguments_for_split(const std::unique_ptr<RuleBase> &original_rule,
-                                               const std::vector<DatalogAtom> &conditions_new_rule,
+                                               const std::vector<DatalogLiteral> &conditions_new_rule,
                                                const std::vector<size_t> body_ids);
 
 

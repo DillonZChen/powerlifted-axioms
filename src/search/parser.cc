@@ -1,6 +1,5 @@
 #include "parser.h"
 #include "action_schema.h"
-#include "datalog/rules/rule_base.h"
 #include "goal_condition.h"
 #include "task.h"
 
@@ -98,7 +97,6 @@ bool parse(Task &task, const ifstream &in)
 
 void parse_axioms(Task &task, int number_axioms)
 {
-    std::vector<std::unique_ptr<datalog::RuleBase>> axioms;
     for (int i = 0; i < number_axioms; ++i) {
         string name;
         int head_index, num_pred_params, num_exist_params, num_body_atoms;
@@ -141,6 +139,7 @@ void parse_axioms(Task &task, int number_axioms)
             // TODO add datalog atom
         }
     }
+    std::vector<std::unique_ptr<datalog::RuleBase>> axioms;
     task.initialize_axioms(axioms);
 }
 

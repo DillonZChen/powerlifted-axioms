@@ -29,7 +29,7 @@ void Datalog::rename_variables() {
             // We extract only variables from the conditions as we only work with Datalog programs
             // where variables in the head must occur in the body.
             std::vector<Term> new_terms;
-            for (const Term &t : c.get_arguments()) {
+            for (const Term &t : c.atom.get_arguments()) {
                 if (t.is_object()) {
                     new_terms.emplace_back(t);
                     continue;

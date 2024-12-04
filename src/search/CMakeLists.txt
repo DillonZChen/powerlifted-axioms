@@ -100,6 +100,7 @@ add_executable(search
         datalog/arguments.h
         datalog/datalog_atom.cc datalog/datalog_atom.h
         datalog/datalog_fact.cc datalog/datalog_fact.h
+        datalog/datalog_literal.cc datalog/datalog_literal.h
         datalog/term.h
         datalog/object.cc datalog/object.h
         datalog/rules/rule_base.cc datalog/rules/rule_base.h
@@ -110,6 +111,7 @@ add_executable(search
         datalog/rules/project.h
         heuristics/ff_heuristic.h
         datalog/annotations/annotation.h
+        datalog/annotations/annotation_generator.h
         datalog/ground_rule.h
         heuristics/ff_heuristic.cc
         heuristics/rff_heuristic.cc

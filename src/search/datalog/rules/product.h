@@ -66,7 +66,7 @@ public:
 class ProductRule : public RuleBase {
     std::vector<ReachedFacts> reached_facts_per_condition;
 public:
-    ProductRule(int weight, DatalogAtom eff, std::vector<DatalogAtom> c, std::unique_ptr<Annotation> annotation)
+    ProductRule(int weight, DatalogAtom eff, std::vector<DatalogLiteral> c, std::unique_ptr<Annotation> annotation)
         : RuleBase(weight, std::move(eff), std::move(c), std::move(annotation)),
           reached_facts_per_condition(conditions.size()) {
     }

@@ -70,7 +70,7 @@ public:
 
     void initialize_action_schemas(const std::vector<ActionSchema> &action_list);
 
-    void initialize_axioms(const std::vector<std::unique_ptr<datalog::RuleBase>> &rules);
+    void initialize_axioms(std::vector<std::unique_ptr<datalog::RuleBase>> &rules);
 
     const GoalCondition &get_goal() const {
         return goal;

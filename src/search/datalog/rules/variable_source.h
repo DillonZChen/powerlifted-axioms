@@ -1,7 +1,7 @@
 #ifndef SEARCH_DATALOG_RULES_VARIABLE_SOURCE_H_
 #define SEARCH_DATALOG_RULES_VARIABLE_SOURCE_H_
 
-#include "../datalog_atom.h"
+#include "../datalog_literal.h"
 
 #include <unordered_map>
 #include <vector>
@@ -27,7 +27,7 @@ class VariableSource {
     std::vector<int> map_entry_to_term;
 
 public:
-    VariableSource(const DatalogAtom &effect, const std::vector<DatalogAtom> &conditions) {
+    VariableSource(const DatalogAtom &effect, const std::vector<DatalogLiteral> &conditions) {
         table.clear();
 
         std::vector<Term> all_arguments;
@@ -35,8 +35,8 @@ public:
             if (t.is_object()) continue;
             all_arguments.emplace_back(t);
         }
-        for (const DatalogAtom &b : conditions) {
-            for (const Term &t: b.get_arguments()) {
+        for (const DatalogLiteral &b : conditions) {
+            for (const Term &t: b.atom.get_arguments()) {
                 if (t.is_object()) continue;
                 if (std::find(all_arguments.begin(), all_arguments.end(), t) == all_arguments.end()) {
                     all_arguments.emplace_back(t);
@@ -53,9 +53,9 @@ public:
             std::pair<int, int> p;
             bool found_correspondence = false;
             int body_atom_counter = 0;
-            for (const DatalogAtom &b : conditions) {
+            for (const DatalogLiteral &b : conditions) {
                 int position_counter = 0;
-                for (const Term &body_arg: b.get_arguments()) {
+                for (const Term &body_arg: b.atom.get_arguments()) {
                     if (body_arg.is_object()) continue;
                     if (body_arg.get_index()==arg.get_index()) {
                         p.first = (body_atom_counter + 1)*-1;

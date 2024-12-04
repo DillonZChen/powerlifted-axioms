@@ -34,8 +34,8 @@ bool Datalog::remove_duplicate_rules() {
         DatalogAtom head_rule_i = rules[i]->get_effect();
         for (size_t j = 0; j < rules.size(); j++) {
             size_t counter = 0;
-            for (const DatalogAtom &condition : rules[j]->get_conditions()) {
-                if (equivalent_to_i.count(condition.get_predicate_index()) > 0) {
+            for (const DatalogLiteral &condition : rules[j]->get_conditions()) {
+                if (equivalent_to_i.count(condition.atom.get_predicate_index()) > 0) {
                     /*
                      * Whenever equivalent atoms are replaced in rule bodies, we need to use the
                      * old variable names.

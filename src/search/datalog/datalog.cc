@@ -56,7 +56,7 @@ void Datalog::generate_action_rule(const ActionSchema &schema,
     map_new_predicates_to_idx.emplace(action_predicate, idx);
     predicate_names.push_back(action_predicate);
     DatalogAtom eff(schema, idx);
-    vector<DatalogAtom> body = get_atoms_in_rule_body(schema, nullary_preconds);
+    vector<DatalogLiteral> body = get_atoms_in_rule_body(schema, nullary_preconds);
     // We reverse the body because this apparently has an affect in performance for some domains
     // (e.g., logistics). This was already done in the previous implementation.
     std::reverse(body.begin(), body.end());
@@ -65,7 +65,7 @@ void Datalog::generate_action_rule(const ActionSchema &schema,
 }
 
 void Datalog::generate_action_effect_rules(const ActionSchema &schema, AnnotationGenerator &annotation_generator) {
-    vector<DatalogAtom> body = get_action_effect_rule_body(schema);
+    vector<DatalogLiteral> body = get_action_effect_rule_body(schema);
     for (const Atom &eff : schema.get_effects()) {
         if (eff.is_negated())
             continue;
@@ -83,24 +83,24 @@ void Datalog::generate_action_effect_rules(const ActionSchema &schema, Annotatio
     }
 }
 
-vector<DatalogAtom> Datalog::get_action_effect_rule_body(const ActionSchema &schema) {
-    vector<DatalogAtom> body(1);
+vector<DatalogLiteral> Datalog::get_action_effect_rule_body(const ActionSchema &schema) {
+    vector<DatalogLiteral> body(1);
     string action_predicate = "action-" + schema.get_name();
     size_t idx = map_new_predicates_to_idx[action_predicate];
-    body[0] = DatalogAtom(schema, idx);
+    body[0] = DatalogLiteral(0, DatalogAtom(schema, idx));
     return body;
 }
 
-vector<DatalogAtom> Datalog::get_atoms_in_rule_body(const ActionSchema &schema,
-                                                    const vector<size_t> &nullary_preconds) const {
-    vector<DatalogAtom> body;
+vector<DatalogLiteral> Datalog::get_atoms_in_rule_body(const ActionSchema &schema,
+                                                       const vector<size_t> &nullary_preconds) const {
+    vector<DatalogLiteral> body;
     for (const Atom &condition : schema.get_precondition()) {
         if (condition.is_negated())
             continue;
-        body.emplace_back(DatalogAtom(condition));
+        body.emplace_back(DatalogLiteral(0, DatalogAtom(condition)));
     }
     for (size_t nullary_idx : nullary_preconds) {
-        body.emplace_back(DatalogAtom(Arguments(), nullary_idx, false));
+        body.emplace_back(DatalogLiteral(0, DatalogAtom(Arguments(), nullary_idx, false)));
     }
     return body;
 }
@@ -117,7 +117,7 @@ void Datalog::output_rule(const std::unique_ptr<RuleBase> &rule) const {
     }
     for (const auto &condition : rule->get_conditions()) {
         --number_conditions;
-        output_atom(condition);
+        output_atom(condition.atom);
         if (number_conditions > 0) {
             cout << ", ";
         }

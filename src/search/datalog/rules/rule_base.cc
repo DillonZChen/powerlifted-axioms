@@ -19,21 +19,22 @@ void RuleBase::output_variable_table() const {
 }
 
 void RuleBase::update_conditions(DatalogAtom new_atom,
-                                 const std::vector<DatalogAtom> &new_rule_conditions,
+                                 const std::vector<DatalogLiteral> &new_rule_conditions,
                                  const VariableSource &variable_source_new_rule,
                                  std::vector<size_t> &&body_ids) {
 
     /*
      * TODO Change removal method and create local lookup table to simplify the decrement of
      * indices.
+     * TODO support updating conditions from literals
      */
 
     std::sort(body_ids.begin(), body_ids.end());
-    std::vector<DatalogAtom> old_conditions = conditions;
+    std::vector<DatalogLiteral> old_conditions = conditions;
     for (int i = int(body_ids.size()) -1; i >= 0; --i) {
         conditions.erase(conditions.begin() + body_ids[i]);
     }
-    conditions.push_back(new_atom);
+    conditions.push_back(DatalogLiteral(0, new_atom));
 
     int final_index = conditions.size() - 1;
     int entry_counter = 0;
@@ -50,8 +51,8 @@ void RuleBase::update_conditions(DatalogAtom new_atom,
 
             // Then, we find out the position of its entry in the table
             bool found_correspondence = false;
-            for (const DatalogAtom &b : new_rule_conditions) {
-                for (const Term &body_arg : b.get_arguments()) {
+            for (const DatalogLiteral &b : new_rule_conditions) {
+                for (const Term &body_arg : b.atom.get_arguments()) {
                     if (body_arg.is_object()) continue;
                     if (body_arg.get_index() == term_index) {
                         p.second = variable_source_new_rule.get_table_entry_index_from_term(term_index);
@@ -91,12 +92,12 @@ void RuleBase::update_conditions(DatalogAtom new_atom,
 }
 
 void RuleBase::set_specific_condition(size_t i, DatalogAtom atom) {
-    conditions[i] = atom;
+    conditions[i].atom = atom;
 }
 
 void RuleBase::update_single_condition_and_variable_source_table(size_t j, DatalogAtom atom)  {
 
-    std::vector<int> argument_shift(conditions[j].get_arguments().size(), 0);
+    std::vector<int> argument_shift(conditions[j].atom.get_arguments().size(), 0);
     int shift = 0;
     for (const Term &t : atom.get_arguments()) {
         if (t.is_object()) {
@@ -106,7 +107,7 @@ void RuleBase::update_single_condition_and_variable_source_table(size_t j, Datal
         argument_shift[t.get_index()] = shift;
     }
 
-    conditions[j] = atom;
+    conditions[j].atom = atom;
 
     size_t counter = 0;
     for (std::pair<int, int> &p : variable_source.get_table()) {
@@ -117,11 +118,11 @@ void RuleBase::update_single_condition_and_variable_source_table(size_t j, Datal
     }
 }
 
-void RuleBase::set_conditions(std::vector<DatalogAtom> new_rule_conditions) {
+void RuleBase::set_conditions(std::vector<DatalogLiteral> new_rule_conditions) {
     conditions = new_rule_conditions;
 }
 
-void RuleBase::replace_single_condition(size_t j, DatalogAtom atom)  {
+void RuleBase::replace_single_condition(size_t j, DatalogLiteral atom)  {
     conditions[j] = atom;
 }
 

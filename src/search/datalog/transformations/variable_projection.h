@@ -76,7 +76,7 @@ void Datalog::project_out_variables(std::unique_ptr<RuleBase> &rule,
             }
 
             DatalogAtom new_atom(new_args, idx, true);
-            std::vector<DatalogAtom> new_condition;
+            std::vector<DatalogLiteral> new_condition;
             new_condition.push_back(rule->get_conditions()[i]);
 
             std::unique_ptr<RuleBase> new_rule = std::make_unique<ProjectRule>(0,

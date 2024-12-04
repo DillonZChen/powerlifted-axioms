@@ -17,18 +17,19 @@ void Datalog::add_goal_rule(const Task &task, AnnotationGenerator &annotation_ge
 
     goal_atom_idx = idx;
 
-    std::vector<DatalogAtom> body;
+    std::vector<DatalogLiteral> body;
     for (const AtomicGoal &ag: task.get_goal().goal) {
         std::vector<std::pair<int, int>> terms;
         for (int arg: ag.get_arguments()) {
             terms.emplace_back(arg, OBJECT); // All goal conditions are ground.
         }
         DatalogAtom atom(Arguments(terms), ag.get_predicate_index(), false);
-        body.push_back(atom);
+        body.push_back(DatalogLiteral(0, atom));
     }
 
     for (int nullary_goal_idx: task.get_goal().positive_nullary_goals) {
-        body.emplace_back(Arguments(), nullary_goal_idx, false);
+        DatalogAtom atom(Arguments(), nullary_goal_idx, false);
+        body.push_back(DatalogLiteral(0, atom));
     }
 
     rules.emplace_back(std::make_unique<ProductRule>(0, goal, body, std::move(ann)));

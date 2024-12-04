@@ -84,9 +84,9 @@ Arguments compute_joining_variables(const std::unique_ptr<RuleBase> &rule, const
         if (not t.is_object())
             important_vars_for_body_and_head.insert(t);
     }
-    for (const DatalogAtom &condition : rule->get_conditions()) {
-        if (condition == atom1 or condition == atom2) continue;
-        for (const auto &t : condition.get_arguments()) {
+    for (const DatalogLiteral &condition : rule->get_conditions()) {
+        if (condition.atom == atom1 or condition.atom == atom2) continue;
+        for (const auto &t : condition.atom.get_arguments()) {
             important_vars_for_body_and_head.insert(t);
         }
     }
