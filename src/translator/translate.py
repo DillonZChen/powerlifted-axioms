@@ -182,7 +182,14 @@ def print_axioms(output, task, object_index, predicate_index, type_index):
         n_predicate_parameters = axiom.num_external_parameters
         n_existential_parameters = n_parameters - n_predicate_parameters
         parameter_index = {}
-        body = axiom.condition.parts
+        body = axiom.condition
+        # assumes body contains at least one atom
+        if isinstance(axiom.condition, pddl.Conjunction):
+            # >= 2 atoms in the body
+            body = body.parts
+        else:
+            # 1 atom in the body
+            body = [body]
         print(
             axiom.name, 
             predicate_index[axiom.name], 
@@ -191,6 +198,7 @@ def print_axioms(output, task, object_index, predicate_index, type_index):
             len(body),
             file=output,
         )
+        print(axiom.condition)
         for index, par in enumerate(axiom.parameters):
             parameter_index[par.name] = index
             print(par.name, index, type_index[par.type_name], file=output)

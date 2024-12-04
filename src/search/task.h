@@ -84,6 +84,8 @@ public:
 
     void dump_goal();
 
+    void dump_axioms() const;
+
     void flag_object_creation() {
         object_creation  = true;
     }

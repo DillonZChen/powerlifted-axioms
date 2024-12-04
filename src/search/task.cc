@@ -34,12 +34,10 @@ void Task::create_empty_initial_state(size_t number_predicates, int num_objects)
         static_preds.push_back(r);
         fluents.push_back(r);
     }
-    initial_state = DBState(std::move(fluents),
-                            vector<bool>(predicates.size(), false),
-                            num_objects);
-    static_info = StaticInformation(std::move(static_preds),
-                                    vector<bool>(predicates.size(), false),
-                                    num_objects);
+    initial_state =
+        DBState(std::move(fluents), vector<bool>(predicates.size(), false), num_objects);
+    static_info = StaticInformation(
+        std::move(static_preds), vector<bool>(predicates.size(), false), num_objects);
 }
 
 void Task::dump_state(DBState s) const
@@ -47,12 +45,12 @@ void Task::dump_state(DBState s) const
     /*
      * Output initial state in a human readable way.
      */
-    const auto& nullary_atoms = s.get_nullary_atoms();
+    const auto &nullary_atoms = s.get_nullary_atoms();
     for (size_t j = 0; j < nullary_atoms.size(); ++j) {
         if (nullary_atoms[j])
             cout << predicates[j].get_name() << ", ";
     }
-    const auto& relations = s.get_relations();
+    const auto &relations = s.get_relations();
     for (size_t i = 0; i < relations.size(); ++i) {
         string relation_name = predicates[i].get_name();
         unordered_set<GroundAtom, TupleHash> tuples = relations[i].tuples;
@@ -60,7 +58,7 @@ void Task::dump_state(DBState s) const
             cout << relation_name << "(";
             for (auto obj : tuple) {
                 cout << obj << ',';
-                //cout << objects[obj].get_name() << ",";
+                // cout << objects[obj].get_name() << ",";
             }
             cout << "), ";
         }
@@ -92,6 +90,29 @@ void Task::dump_goal()
 }
 
 
+void Task::dump_axioms() const {
+    std::vector<std::string> p_names;
+    for (const auto &p : predicates) {
+        p_names.push_back(p.get_name());
+    }
+    for (const auto &axiom : axioms) {
+        datalog::DatalogAtom head = axiom->get_effect();
+        std::vector<datalog::DatalogLiteral> body = axiom->get_conditions();
+        cout << head.to_string(p_names) << " :- ";
+        for (size_t i = 0; i < body.size(); ++i) {
+            if (body[i].negated) {
+                cout << "!";
+            }
+            cout << body[i].atom.to_string(p_names);
+            if (i != body.size() - 1) {
+                cout << ", ";
+            }
+        }
+        cout << endl;
+    }
+}
+
+
 void Task::create_goal_condition(std::vector<AtomicGoal> goals,
                                  std::unordered_set<int> nullary_goals,
                                  std::unordered_set<int> negative_nullary_goals)
@@ -108,6 +129,7 @@ void Task::initialize_action_schemas(const std::vector<ActionSchema> &action_lis
 void Task::initialize_axioms(std::vector<std::unique_ptr<datalog::GenericRule>> &rules)
 {
     axioms = std::move(rules);
+    // dump_axioms();
 }
 
 bool Task::is_goal(const DBState &state) const
@@ -161,10 +183,11 @@ bool Task::is_trivially_unsolvable() const
 }
 
 
-std::vector<std::vector<int>> Task::compute_object_index() const {
+std::vector<std::vector<int>> Task::compute_object_index() const
+{
     std::vector<std::vector<int>> objects_per_type(type_names.size());
 
-    for (const Object &o:objects) {
+    for (const Object &o : objects) {
         for (int t : o.get_types()) {
             objects_per_type[t].push_back(o.get_index());
         }
