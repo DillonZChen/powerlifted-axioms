@@ -92,6 +92,9 @@ void Task::dump_goal() const
 
 void Task::dump_axioms() const
 {
+    /*
+     * Output axioms in a readable format.
+     */
     cout << "{{BEGIN_DUMP Axioms}}" << endl;
     std::vector<std::string> p_names;
     for (const auto &p : predicates) {
@@ -134,6 +137,11 @@ void Task::initialize_action_schemas(const std::vector<ActionSchema> &action_lis
 
 void Task::initialize_axioms(std::vector<Axiom> &axioms)
 {
+    /*
+     * Checks whether axioms can be stratified and stratifies them. 
+     * See Algorithm 1 from Thiebaux et al., IJCAI-03
+     */
+    
     // collect derived predicates
     std::unordered_map<int, int> derived_predicate_indices;
     for (const auto &axiom : axioms) {

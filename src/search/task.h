@@ -70,8 +70,6 @@ public:
 
     void initialize_action_schemas(const std::vector<ActionSchema> &action_list);
 
-    // Checks whether axioms can be stratified and stratifies them. 
-    // See Algorithm 1 from Thiebaux et al., IJCAI-03
     void initialize_axioms(std::vector<Axiom> &rules);
 
     const GoalCondition &get_goal() const {
