@@ -139,9 +139,11 @@ void Task::initialize_axioms(std::vector<Axiom> &axioms)
 {
     /*
      * Checks whether axioms can be stratified and stratifies them. 
-     * See Algorithm 1 from Thiebaux et al., IJCAI-03
+     * Uses Algorithm 1 from Thiebaux et al., IJCAI-03
+     * 
+     * Finishes by extending the initial state with axioms
      */
-    
+
     // collect derived predicates
     std::unordered_map<int, int> derived_predicate_indices;
     for (const auto &axiom : axioms) {
@@ -246,6 +248,7 @@ void Task::initialize_axioms(std::vector<Axiom> &axioms)
     }
 
     dump_axioms();
+    // TODO extend initial state with axioms
 }
 
 bool Task::is_goal(const DBState &state) const

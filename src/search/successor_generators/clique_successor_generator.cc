@@ -528,7 +528,7 @@ vector<LiftedOperatorId> CliqueSuccessorGenerator::applicable_actions_general_ca
 }
 
 std::vector<LiftedOperatorId>
-CliqueSuccessorGenerator::get_applicable_actions(const std::vector<ActionSchema> &actions,
+CliqueSuccessorGenerator::get_applicable_actions_impl(const std::vector<ActionSchema> &actions,
                                                  const DBState &state) {
     std::vector<LiftedOperatorId> all_applicable;
     bool has_built_assignment_sets = false;
@@ -565,7 +565,7 @@ CliqueSuccessorGenerator::get_applicable_actions(const std::vector<ActionSchema>
 }
 
 vector<LiftedOperatorId>
-CliqueSuccessorGenerator::get_applicable_actions(const ActionSchema &action, const DBState &state) {
+CliqueSuccessorGenerator::get_applicable_actions_impl(const ActionSchema &action, const DBState &state) {
     if (!test_nullary_preconditions(action, state)) {
         return vector<LiftedOperatorId>();
     }

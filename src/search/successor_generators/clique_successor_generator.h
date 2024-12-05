@@ -154,10 +154,10 @@ private:
 public:
     explicit CliqueSuccessorGenerator(const Task &task, const CliquePivot &pivot);
 
-    std::vector<LiftedOperatorId> get_applicable_actions(const std::vector<ActionSchema> &actions,
+    std::vector<LiftedOperatorId> get_applicable_actions_impl(const std::vector<ActionSchema> &actions,
                                                          const DBState &state) override;
 
-    std::vector<LiftedOperatorId> get_applicable_actions(const ActionSchema &action,
+    std::vector<LiftedOperatorId> get_applicable_actions_impl(const ActionSchema &action,
                                                          const DBState &state) override;
 
     //const GroundAtom tuple_to_atom(const std::vector<int> &tuple, const Atom &eff);

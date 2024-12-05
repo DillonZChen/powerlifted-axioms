@@ -464,7 +464,7 @@ void GenericJoinSuccessor::apply_lifted_action_effects(const ActionSchema &actio
  * If there are instantiations, then we simply apply the action effects, since
  * we know the actions are applicable.
  */
-std::vector<LiftedOperatorId> GenericJoinSuccessor::get_applicable_actions(
+std::vector<LiftedOperatorId> GenericJoinSuccessor::get_applicable_actions_impl(
         const ActionSchema &action, const DBState &state)
 {
     std::unordered_map<int, int> new_objs;
@@ -504,13 +504,13 @@ std::vector<LiftedOperatorId> GenericJoinSuccessor::get_applicable_actions(
     return applicable;
 }
 
-std::vector<LiftedOperatorId> GenericJoinSuccessor::get_applicable_actions(
+std::vector<LiftedOperatorId> GenericJoinSuccessor::get_applicable_actions_impl(
             const std::vector<ActionSchema> &actions, const DBState &state)
 {
     std::vector<LiftedOperatorId> all_applicable_actions;
 
     for (const auto& action : actions) {
-        const auto applicable_actions = get_applicable_actions(action, state);
+        const auto applicable_actions = get_applicable_actions_impl(action, state);
         all_applicable_actions.reserve(all_applicable_actions.size() + applicable_actions.size());
         all_applicable_actions.insert(all_applicable_actions.end(), applicable_actions.cbegin(), applicable_actions.cend());
     }
