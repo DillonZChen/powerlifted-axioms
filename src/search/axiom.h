@@ -5,6 +5,6 @@
 
 #include <memory>
 
-using Axiom = std::unique_ptr<datalog::GenericRule>;
+using Axiom = std::shared_ptr<datalog::GenericRule>;
 
 #endif  // SEARCH_AXIOM_H

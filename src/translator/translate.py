@@ -150,6 +150,7 @@ def transform_into_unit_cost(task):
 
 
 def print_axioms(output, task, object_index, predicate_index, type_index):
+    # NOTE: disjunctions and forall quantifiers not supported
     # Axioms are defined as follows
     # [we do not handle partially instantiated axioms]
     # - First, a canary and the number of axioms 

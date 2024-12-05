@@ -27,8 +27,7 @@
 
 class Task {
 
-    std::vector<std::vector<int>> stratification;  // of predicate indices
-    std::vector<Axiom> axioms;
+    std::vector<std::vector<Axiom>> stratified_axioms;
     std::vector<ActionSchema> action_schemas;
     GoalCondition goal;
     bool object_creation;
@@ -88,8 +87,6 @@ public:
     void dump_goal() const;
 
     void dump_axioms() const;
-
-    void dump_stratification() const;
 
     void flag_object_creation() {
         object_creation  = true;

@@ -1,3 +1,4 @@
+#include "axiom.h"
 #include "parser.h"
 #include "action_schema.h"
 #include "goal_condition.h"
@@ -99,7 +100,7 @@ bool parse(Task &task, const ifstream &in)
 
 void parse_axioms(Task &task, int number_axioms)
 {
-    std::vector<std::unique_ptr<datalog::GenericRule>> axioms;
+    std::vector<Axiom> axioms;
     for (int i = 0; i < number_axioms; ++i) {
         string name;
         int head_index, num_pred_params, num_exist_params, num_body_atoms;
@@ -149,7 +150,7 @@ void parse_axioms(Task &task, int number_axioms)
             datalog::DatalogLiteral literal(negated, atom);
             body.push_back(literal);
         }
-        axioms.push_back(std::make_unique<datalog::GenericRule>(head, body));
+        axioms.push_back(std::make_shared<datalog::GenericRule>(head, body));
     }
     task.initialize_axioms(axioms);
 }

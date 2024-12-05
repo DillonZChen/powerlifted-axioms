@@ -90,41 +90,32 @@ void Task::dump_goal() const
 }
 
 
-void Task::dump_axioms() const {
+void Task::dump_axioms() const
+{
     cout << "{{BEGIN_DUMP Axioms}}" << endl;
     std::vector<std::string> p_names;
     for (const auto &p : predicates) {
         p_names.push_back(p.get_name());
     }
-    for (const auto &axiom : axioms) {
-        datalog::DatalogAtom head = axiom->get_effect();
-        std::vector<datalog::DatalogLiteral> body = axiom->get_conditions();
-        cout << head.to_string(p_names) << " :- ";
-        for (size_t i = 0; i < body.size(); ++i) {
-            if (body[i].negated) {
-                cout << "!";
+    for (size_t i = 0; i < stratified_axioms.size(); i++) {
+        cout << "STRATUM " << i << endl;
+        for (const auto &axiom : stratified_axioms[i]) {
+            datalog::DatalogAtom head = axiom->get_effect();
+            std::vector<datalog::DatalogLiteral> body = axiom->get_conditions();
+            cout << head.to_string(p_names) << " :- ";
+            for (size_t i = 0; i < body.size(); ++i) {
+                if (body[i].negated) {
+                    cout << "!";
+                }
+                cout << body[i].atom.to_string(p_names);
+                if (i != body.size() - 1) {
+                    cout << ", ";
+                }
             }
-            cout << body[i].atom.to_string(p_names);
-            if (i != body.size() - 1) {
-                cout << ", ";
-            }
+            cout << endl;
         }
-        cout << endl;
     }
     cout << "{{END_DUMP Axioms}}" << endl;
-}
-
-
-void Task::dump_stratification() const {
-    cout << "{{BEGIN_DUMP Stratification}}" << endl;
-    for (size_t i = 0; i < stratification.size(); ++i) {
-        cout << "STRATUM " << i << endl;
-        for (size_t j = 0; j < stratification[i].size(); ++j) {
-            cout << get_predicate_name(stratification[i][j]) << endl;
-        }
-        cout << endl;
-    }
-    cout << "{{END_DUMP Stratification}}" << endl;
 }
 
 
@@ -143,12 +134,9 @@ void Task::initialize_action_schemas(const std::vector<ActionSchema> &action_lis
 
 void Task::initialize_axioms(std::vector<Axiom> &axioms)
 {
-    this->axioms = std::move(axioms);
-    dump_axioms();
-
     // collect derived predicates
     std::unordered_map<int, int> derived_predicate_indices;
-    for (const auto &axiom : this->axioms) {
+    for (const auto &axiom : axioms) {
         const datalog::DatalogAtom &head = axiom->get_effect();
         int head_predicate = head.get_predicate_index();
         if (predicates.at(head_predicate).isStaticPredicate()) {
@@ -165,7 +153,7 @@ void Task::initialize_axioms(std::vector<Axiom> &axioms)
     std::vector<std::vector<int>> R(n, std::vector<int>(n, 0));
 
     // init values
-    for (const auto &axiom : this->axioms) {
+    for (const auto &axiom : axioms) {
         int j = derived_predicate_indices[axiom->get_effect().get_predicate_index()];
         for (const auto &literal : axiom->get_conditions()) {
             int predicate = literal.atom.get_predicate_index();
@@ -175,7 +163,8 @@ void Task::initialize_axioms(std::vector<Axiom> &axioms)
             int i = derived_predicate_indices.at(predicate);
             if (literal.negated) {
                 R[i][j] = 2;
-            } else {
+            }
+            else {
                 R[i][j] = std::max(R[i][j], 1);
             }
         }
@@ -206,14 +195,15 @@ void Task::initialize_axioms(std::vector<Axiom> &axioms)
         derived_to_task.at(entry.second) = entry.first;
     }
 
-    // stratify axioms
+    // stratify predicates
+    std::unordered_map<int, int> predicate_stratification;
     std::unordered_set<int> remaining;
+    int level = 0;
     for (int i = 0; i < n; ++i) {
         remaining.insert(i);
     }
     while (!remaining.empty()) {
-        std::vector<int> stratum_task_indices;
-        std::vector<int> stratum_derived_indices;
+        std::vector<int> to_remove;
 
         for (const auto &j : remaining) {
             bool add = true;
@@ -224,21 +214,30 @@ void Task::initialize_axioms(std::vector<Axiom> &axioms)
                 }
             }
             if (add) {
-                stratum_task_indices.push_back(derived_to_task[j]);
-                stratum_derived_indices.push_back(j);
+                predicate_stratification[derived_to_task[j]] = level;
+                to_remove.push_back(j);
             }
         }
 
         // remaining = remaining \ stratum_derived_indices
-        for (const auto &j : stratum_derived_indices) {
+        for (const auto &j : to_remove) {
             remaining.erase(j);
         }
-        
-        // stratification = stratification + stratum
-        stratification.push_back(stratum_task_indices);
+
+        level++;
     }
 
-    dump_stratification();
+    // stratify axioms
+    stratified_axioms = std::vector<std::vector<Axiom>>(level);
+    for (int i = 0; i < level; i++) {
+        stratified_axioms[i] = std::vector<Axiom>();
+    }
+    for (const auto &axiom : axioms) {
+        int level = predicate_stratification[axiom->get_effect().get_predicate_index()];
+        stratified_axioms[level].push_back(axiom);
+    }
+
+    dump_axioms();
 }
 
 bool Task::is_goal(const DBState &state) const
