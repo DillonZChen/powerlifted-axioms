@@ -2,16 +2,16 @@
 #define SEARCH_TASK_H
 
 #include "action_schema.h"
+#include "axiom.h"
 #include "goal_condition.h"
 #include "object.h"
 #include "predicate.h"
 #include "states/state.h"
-#include "datalog/rules/generic_rule.h"
 
-#include <memory>
 #include <ostream>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 
@@ -27,7 +27,8 @@
 
 class Task {
 
-    std::vector<std::unique_ptr<datalog::GenericRule>> axioms;
+    std::vector<std::vector<int>> stratification;  // of predicate indices
+    std::vector<Axiom> axioms;
     std::vector<ActionSchema> action_schemas;
     GoalCondition goal;
     bool object_creation;
@@ -70,7 +71,9 @@ public:
 
     void initialize_action_schemas(const std::vector<ActionSchema> &action_list);
 
-    void initialize_axioms(std::vector<std::unique_ptr<datalog::GenericRule>> &rules);
+    // Checks whether axioms can be stratified and stratifies them. 
+    // See Algorithm 1 from Thiebaux et al., IJCAI-03
+    void initialize_axioms(std::vector<Axiom> &rules);
 
     const GoalCondition &get_goal() const {
         return goal;
@@ -82,9 +85,11 @@ public:
 
     void dump_state(DBState s) const;
 
-    void dump_goal();
+    void dump_goal() const;
 
     void dump_axioms() const;
+
+    void dump_stratification() const;
 
     void flag_object_creation() {
         object_creation  = true;

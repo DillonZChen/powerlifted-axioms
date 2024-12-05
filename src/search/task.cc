@@ -66,7 +66,7 @@ void Task::dump_state(DBState s) const
     cout << endl;
 }
 
-void Task::dump_goal()
+void Task::dump_goal() const
 {
     /*
      * Output goal condition in a readable format.
@@ -91,6 +91,7 @@ void Task::dump_goal()
 
 
 void Task::dump_axioms() const {
+    cout << "{{BEGIN_DUMP Axioms}}" << endl;
     std::vector<std::string> p_names;
     for (const auto &p : predicates) {
         p_names.push_back(p.get_name());
@@ -110,6 +111,20 @@ void Task::dump_axioms() const {
         }
         cout << endl;
     }
+    cout << "{{END_DUMP Axioms}}" << endl;
+}
+
+
+void Task::dump_stratification() const {
+    cout << "{{BEGIN_DUMP Stratification}}" << endl;
+    for (size_t i = 0; i < stratification.size(); ++i) {
+        cout << "STRATUM " << i << endl;
+        for (size_t j = 0; j < stratification[i].size(); ++j) {
+            cout << get_predicate_name(stratification[i][j]) << endl;
+        }
+        cout << endl;
+    }
+    cout << "{{END_DUMP Stratification}}" << endl;
 }
 
 
@@ -126,10 +141,104 @@ void Task::initialize_action_schemas(const std::vector<ActionSchema> &action_lis
     action_schemas = action_list;
 }
 
-void Task::initialize_axioms(std::vector<std::unique_ptr<datalog::GenericRule>> &rules)
+void Task::initialize_axioms(std::vector<Axiom> &axioms)
 {
-    axioms = std::move(rules);
-    // dump_axioms();
+    this->axioms = std::move(axioms);
+    dump_axioms();
+
+    // collect derived predicates
+    std::unordered_map<int, int> derived_predicate_indices;
+    for (const auto &axiom : this->axioms) {
+        const datalog::DatalogAtom &head = axiom->get_effect();
+        int head_predicate = head.get_predicate_index();
+        if (predicates.at(head_predicate).isStaticPredicate()) {
+            continue;
+        }
+        if (derived_predicate_indices.count(head_predicate)) {
+            continue;
+        }
+        derived_predicate_indices[head_predicate] = derived_predicate_indices.size();
+    }
+    int n = derived_predicate_indices.size();
+
+    // init stratification matrix
+    std::vector<std::vector<int>> R(n, std::vector<int>(n, 0));
+
+    // init values
+    for (const auto &axiom : this->axioms) {
+        int j = derived_predicate_indices[axiom->get_effect().get_predicate_index()];
+        for (const auto &literal : axiom->get_conditions()) {
+            int predicate = literal.atom.get_predicate_index();
+            if (!derived_predicate_indices.count(predicate)) {
+                continue;
+            }
+            int i = derived_predicate_indices.at(predicate);
+            if (literal.negated) {
+                R[i][j] = 2;
+            } else {
+                R[i][j] = std::max(R[i][j], 1);
+            }
+        }
+    }
+
+    // recurse
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            for (int k = 0; k < n; ++k) {
+                if (std::min(R[i][j], R[j][k]) > 0) {
+                    R[i][k] = std::max(R[i][j], std::max(R[j][k], R[i][k]));
+                }
+            }
+        }
+    }
+
+    // check if stratification is possible
+    for (int i = 0; i < n; ++i) {
+        if (R[i][i] == 2) {
+            cout << "Error: Axioms cannot be stratified!" << endl;
+            exit(1);
+        }
+    }
+
+    // derived predicate indices to task predicate indices
+    std::vector<int> derived_to_task(n);
+    for (const auto &entry : derived_predicate_indices) {
+        derived_to_task.at(entry.second) = entry.first;
+    }
+
+    // stratify axioms
+    std::unordered_set<int> remaining;
+    for (int i = 0; i < n; ++i) {
+        remaining.insert(i);
+    }
+    while (!remaining.empty()) {
+        std::vector<int> stratum_task_indices;
+        std::vector<int> stratum_derived_indices;
+
+        for (const auto &j : remaining) {
+            bool add = true;
+            for (const auto &i : remaining) {
+                if (R[i][j] == 2) {
+                    add = false;
+                    break;
+                }
+            }
+            if (add) {
+                stratum_task_indices.push_back(derived_to_task[j]);
+                stratum_derived_indices.push_back(j);
+            }
+        }
+
+        // remaining = remaining \ stratum_derived_indices
+        for (const auto &j : stratum_derived_indices) {
+            remaining.erase(j);
+        }
+        
+        // stratification = stratification + stratum
+        stratification.push_back(stratum_task_indices);
+    }
+
+    dump_stratification();
 }
 
 bool Task::is_goal(const DBState &state) const

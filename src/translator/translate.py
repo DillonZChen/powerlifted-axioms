@@ -198,7 +198,6 @@ def print_axioms(output, task, object_index, predicate_index, type_index):
             len(body),
             file=output,
         )
-        print(axiom.condition)
         for index, par in enumerate(axiom.parameters):
             parameter_index[par.name] = index
             print(par.name, index, type_index[par.type_name], file=output)
