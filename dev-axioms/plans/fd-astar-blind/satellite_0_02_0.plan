@@ -1,0 +1,8 @@
+(switch_on ins2 sat1)
+(turn_to sat1 dir1 dir4)
+(calibrate sat1 ins2 dir1)
+(take_image sat1 dir1 ins2 mod1)
+(turn_to sat1 dir4 dir1)
+(take_image sat1 dir4 ins2 mod1)
+(turn_to sat1 dir3 dir4)
+(turn_to sat3 dir4 dir1)

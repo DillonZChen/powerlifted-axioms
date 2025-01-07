@@ -1,0 +1,7 @@
+(define (problem satellite-01)
+    (:domain satellite)
+    (:requirements :derived-predicates :existential-preconditions :negative-preconditions :strips :typing)
+    (:objects dir1 dir2 - direction ins1 - instrument mod1 - mode sat1 - satellite)
+    (:init (calibration_target ins1 dir1) (have_image_G dir2 mod1) (on_board ins1 sat1) (pointing sat1 dir1) (power_avail sat1) (supports ins1 mod1))
+    (:goal (have_image dir2 mod1))
+)

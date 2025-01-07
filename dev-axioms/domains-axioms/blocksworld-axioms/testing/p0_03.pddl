@@ -1,0 +1,30 @@
+;; blocks=6, out_folder=testing/easy, instance_id=3, seed=1009
+
+(define (problem blocksworld-03)
+ (:domain blocksworld)
+ (:objects b1 b2 b3 b4 b5 b6 - object)
+ (:init
+	(clear_G b4)
+	(on_G b4 b3)
+	(on_G b3 b5)
+	(on_G b5 b2)
+	(on_G b2 b6)
+	(on_G b6 b1)
+	(on_table_G b1)
+ 
+    (arm_empty)
+    (clear b3)
+    (on b3 b6)
+    (on b6 b5)
+    (on b5 b4)
+    (on b4 b1)
+    (on b1 b2)
+    (on_table b2))
+ (:goal  (and 
+    (clear b4)
+    (on b4 b3)
+    (on b3 b5)
+    (on b5 b2)
+    (on b2 b6)
+    (on b6 b1)
+    (on_table b1))))

@@ -1,0 +1,7 @@
+(define (problem floortile-01)
+    (:domain floortile)
+    (:requirements :derived-predicates :existential-preconditions :negative-preconditions :typing)
+    (:objects black white - color robot1 - robot tile_0_1 tile_1_1 - tile)
+    (:init (available-color black) (available-color white) (clear tile_1_1) (down tile_0_1 tile_1_1) (painted_G tile_1_1 white) (robot-at robot1 tile_0_1) (robot-has robot1 black) (up tile_1_1 tile_0_1))
+    (:goal (painted tile_1_1 white))
+)
