@@ -30,7 +30,7 @@
 class Task {
 
     std::vector<std::vector<Axiom>> stratified_axioms;
-    AxiomsEvaluator axioms_evaluator;
+    axioms::AxiomsEvaluator axioms_evaluator;
     std::vector<ActionSchema> action_schemas;
     GoalCondition goal;
     bool object_creation;

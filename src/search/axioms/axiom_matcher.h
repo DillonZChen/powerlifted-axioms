@@ -7,6 +7,9 @@
 #include <utility>
 #include <vector>
 
+
+namespace axioms {
+
 class AxiomMatch {
     int axiom;
     int position;
@@ -91,5 +94,7 @@ public:
     }
 
 };
+
+} // namespace axioms
 
 #endif //AXIOMS_MATCHER_H_

@@ -24,7 +24,7 @@
 
 */
 
-// TODO Do we want its own namespace?
+namespace axioms {
 
 class AxiomsEvaluator {
 
@@ -77,5 +77,8 @@ public:
       create_axiom_matcher(stratified_axioms);
     }
 };
+
+
+} // namespace axioms
 
 #endif // SEARCH_AXIOMS_EVALUATOR_H
