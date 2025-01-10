@@ -368,7 +368,7 @@ void WeightedGrounder::create_rule_matcher(const Datalog &lp) {
     for (const auto &rule : lp.get_rules()) {
         int cont = 0;
         for (const auto &condition : rule->get_conditions()) {
-            rule_matcher.insert(condition.atom.get_predicate_index(),
+            rule_matcher.insert(condition.get_predicate_index(),
                                 rule->get_index(),
                                 cont++);
         }

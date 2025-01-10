@@ -29,7 +29,7 @@ void add_missing_entries_to_source_table(int position, std::vector<std::unique_p
                                          const std::vector<DatalogLiteral> &new_rule_conditions,
                                          std::unique_ptr<JoinRule> &new_split_rule,
                                          std::vector<int> &term_indices_in_new_args) {
-    int idx_condition = new_rule_conditions[position].atom.get_predicate_index();
+    int idx_condition = new_rule_conditions[position].get_predicate_index();
     VariableSource source = new_split_rule->get_variable_source_object();
     for (const auto &join_rule : join_rules) {
         if (join_rule->get_effect().get_predicate_index() == idx_condition) {
@@ -95,7 +95,7 @@ void Datalog::split_rule(std::vector<std::unique_ptr<RuleBase>> &join_rules, std
 
     std::vector<int> term_indices_in_new_args;
     for (const auto &c : new_split_rule->get_conditions()) {
-        for (const Term &t: c.atom.get_arguments()) {
+        for (const Term &t: c.get_arguments()) {
             if (t.is_object()) continue;
             term_indices_in_new_args.push_back(t.get_index());
         }
@@ -131,8 +131,8 @@ void Datalog::convert_into_join_rules(std::vector<std::unique_ptr<RuleBase>> &jo
         for (size_t i = 0; i < rule->get_conditions().size() - 1; ++i) {
             for (size_t j = i+1; j < rule->get_conditions().size(); ++j) {
                 JoinCost cost = compute_join_cost_fast_downward(rule,
-                                                                rule->get_conditions()[i].atom,
-                                                                rule->get_conditions()[j].atom);
+                                                                rule->get_conditions()[i].get_atom(),
+                                                                rule->get_conditions()[j].get_atom());
                 if (cost < join_cost) {
                     join_cost = cost;
                     idx1 = i;
@@ -158,7 +158,7 @@ void Datalog::convert_into_join_rules(std::vector<std::unique_ptr<RuleBase>> &jo
 bool Datalog::is_product_rule(const std::unique_ptr<RuleBase> &rule) {
     std::set<int> vars;
     for (const auto &condition : rule->get_conditions()) {
-        for (const auto &arg : condition.atom.get_arguments()) {
+        for (const auto &arg : condition.get_arguments()) {
             if (!arg.is_object()) {
                 if (vars.find(arg.get_index()) != vars.end()) return false;
                 vars.insert(arg.get_index());
@@ -206,11 +206,11 @@ void Datalog::convert_rules_to_normal_form(const Task &task) {
                 auto &condition = rule->get_conditions()[i];
                 bool project_away = false;
                 std::vector<Term> remaining_args;
-                for (size_t j = 0; j < condition.atom.get_arguments().size() and !project_away; ++j) {
-                    if (condition.atom.argument(j).is_object()) {
+                for (size_t j = 0; j < condition.get_arguments().size() and !project_away; ++j) {
+                    if (condition.get_atom().argument(j).is_object()) {
                         project_away = true;
                     } else {
-                        remaining_args.push_back(condition.atom.argument(j));
+                        remaining_args.push_back(condition.get_atom().argument(j));
                     }
                 }
                 if (project_away) {
@@ -294,7 +294,7 @@ Arguments Datalog::get_relevant_joining_arguments_from_component(const DatalogAt
     std::vector<Term> terms;
 
     for (const auto &c : conditions) {
-        for (const auto &t : c.atom.get_arguments()) {
+        for (const auto &t : c.get_arguments()) {
             if (!t.is_object() and (std::find(terms.begin(), terms.end(), t) == terms.end())
                 and (std::find(rule_head_args.begin(), rule_head_args.end(), t) != rule_head_args.end())) {
                 terms.emplace_back(t);
@@ -313,7 +313,7 @@ Arguments Datalog::get_relevant_arguments_for_split(const std::unique_ptr<RuleBa
     std::vector<Term> terms_in_new_conditions;
 
     for (const auto &c : conditions_new_rule) {
-        for (const auto &t: c.atom.get_arguments()) {
+        for (const auto &t: c.get_arguments()) {
             if (!t.is_object()
                 and (std::find(terms_in_new_conditions.begin(), terms_in_new_conditions.end(), t)
                     ==terms_in_new_conditions.end())) {
@@ -329,7 +329,7 @@ Arguments Datalog::get_relevant_arguments_for_split(const std::unique_ptr<RuleBa
             ++counter;
             continue;
         }
-        for (const auto &t : c.atom.get_arguments()) {
+        for (const auto &t : c.get_arguments()) {
             if (!t.is_object() and (std::find(terms_in_new_conditions.begin(), terms_in_new_conditions.end(), t) != terms_in_new_conditions.end())
                 and std::find(final_terms.begin(), final_terms.end(), t) == final_terms.end()) {
                 // joining terms

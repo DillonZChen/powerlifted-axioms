@@ -52,7 +52,7 @@ void RuleBase::update_conditions(DatalogAtom new_atom,
             // Then, we find out the position of its entry in the table
             bool found_correspondence = false;
             for (const DatalogLiteral &b : new_rule_conditions) {
-                for (const Term &body_arg : b.atom.get_arguments()) {
+                for (const Term &body_arg : b.get_arguments()) {
                     if (body_arg.is_object()) continue;
                     if (body_arg.get_index() == term_index) {
                         p.second = variable_source_new_rule.get_table_entry_index_from_term(term_index);
@@ -92,12 +92,12 @@ void RuleBase::update_conditions(DatalogAtom new_atom,
 }
 
 void RuleBase::set_specific_condition(size_t i, DatalogAtom atom) {
-    conditions[i].atom = atom;
+    conditions[i].set_atom(atom);
 }
 
 void RuleBase::update_single_condition_and_variable_source_table(size_t j, DatalogAtom atom)  {
 
-    std::vector<int> argument_shift(conditions[j].atom.get_arguments().size(), 0);
+    std::vector<int> argument_shift(conditions[j].get_arguments().size(), 0);
     int shift = 0;
     for (const Term &t : atom.get_arguments()) {
         if (t.is_object()) {
@@ -107,7 +107,7 @@ void RuleBase::update_single_condition_and_variable_source_table(size_t j, Datal
         argument_shift[t.get_index()] = shift;
     }
 
-    conditions[j].atom = atom;
+    conditions[j].set_atom(atom);
 
     size_t counter = 0;
     for (std::pair<int, int> &p : variable_source.get_table()) {

@@ -18,7 +18,7 @@ void Datalog::remove_action_predicates(AnnotationGenerator &annotation_generator
             for (auto &effect_rule : rules) {
                 if (effect_rule->get_conditions().size() != 1)
                     continue; // Not effect rule
-                if (effect_rule->get_conditions()[0].atom.get_predicate_index() == idx) {
+                if (effect_rule->get_conditions()[0].get_predicate_index() == idx) {
                     std::unique_ptr<Annotation> ann = annotation_generator(action_rule_base->get_schema_index(), task);
                     std::unique_ptr<RuleBase> new_rule = std::make_unique<GenericRule>(action_rule->get_weight(),
                                                                                        effect_rule->get_effect(),

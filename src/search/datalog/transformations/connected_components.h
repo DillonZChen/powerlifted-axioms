@@ -87,12 +87,12 @@ std::vector<std::vector<int>> get_components(std::unique_ptr<RuleBase> &rule) {
 
     int condition_counter = 0;
     for (const auto &conditions : rule->get_conditions()) {
-        if (conditions.atom.is_nullary() or conditions.atom.is_ground()) {
+        if (conditions.get_atom().is_nullary() or conditions.get_atom().is_ground()) {
             g.add_node(condition_counter);
         } else {
             g.add_node(condition_counter);
             for (size_t j = condition_counter + 1; j < rule->get_conditions().size(); ++j) {
-                if (rule->get_conditions()[condition_counter].atom.share_variables(rule->get_conditions()[j].atom)) {
+                if (rule->get_conditions()[condition_counter].get_atom().share_variables(rule->get_conditions()[j].get_atom())) {
                     g.add_edge(condition_counter, j);
                     g.add_edge(j, condition_counter);
                 }
@@ -127,7 +127,7 @@ DatalogAtom Datalog::split_connected_component(std::unique_ptr<RuleBase> &origin
             counter++;
         }
         original_rule->update_variable_source_table(std::move(new_source));
-        return original_rule->get_conditions()[component[0]].atom;
+        return original_rule->get_conditions()[component[0]].get_atom();
     }
 
     std::string predicate_name = "p$" + std::to_string(predicate_names.size());

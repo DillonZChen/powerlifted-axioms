@@ -16,7 +16,7 @@ public:
     }
 
     const Arguments &get_condition_arguments() const {
-        return conditions[0].atom.get_arguments();
+        return conditions[0].get_arguments();
     }
 
     std::string get_type_name() override {

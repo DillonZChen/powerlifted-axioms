@@ -13,11 +13,10 @@
 namespace datalog {
 
 class DatalogLiteral {
-public:
-    // TODO these two variables should be private, and should be accessed via constant methods
     bool negated;
     DatalogAtom atom;
 
+public:
     DatalogLiteral() = default;
 
     DatalogLiteral(DatalogAtom atom) : negated(false), atom(std::move(atom)) {}
@@ -34,6 +33,18 @@ public:
 
     int get_predicate_index() const {
         return atom.get_predicate_index();
+    }
+
+    const Arguments &get_arguments() const{
+        return atom.get_arguments();
+    }
+
+    void update_arguments(std::vector<Term> &terms) {
+        atom.update_arguments(terms);
+    }
+
+    void set_atom(DatalogAtom a) {
+      atom = a;
     }
 
     friend bool operator==(const DatalogLiteral &lhs, const DatalogLiteral &rhs)

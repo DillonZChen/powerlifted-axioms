@@ -36,7 +36,7 @@ public:
             all_arguments.emplace_back(t);
         }
         for (const DatalogLiteral &b : conditions) {
-            for (const Term &t: b.atom.get_arguments()) {
+            for (const Term &t: b.get_arguments()) {
                 if (t.is_object()) continue;
                 if (std::find(all_arguments.begin(), all_arguments.end(), t) == all_arguments.end()) {
                     all_arguments.emplace_back(t);
@@ -55,7 +55,7 @@ public:
             int body_atom_counter = 0;
             for (const DatalogLiteral &b : conditions) {
                 int position_counter = 0;
-                for (const Term &body_arg: b.atom.get_arguments()) {
+                for (const Term &body_arg: b.get_arguments()) {
                     if (body_arg.is_object()) continue;
                     if (body_arg.get_index()==arg.get_index()) {
                         p.first = (body_atom_counter + 1)*-1;

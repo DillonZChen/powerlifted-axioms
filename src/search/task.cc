@@ -107,10 +107,10 @@ void Task::dump_axioms() const
             std::vector<datalog::DatalogLiteral> body = axiom->get_conditions();
             cout << head.to_string(p_names) << " :- ";
             for (size_t i = 0; i < body.size(); ++i) {
-                if (body[i].negated) {
+                if (body[i].is_negated()) {
                     cout << "!";
                 }
-                cout << body[i].atom.to_string(p_names);
+                cout << body[i].get_atom().to_string(p_names);
                 if (i != body.size() - 1) {
                     cout << ", ";
                 }
@@ -166,12 +166,12 @@ void Task::initialize_axioms(std::vector<Axiom> &axioms)
     for (const auto &axiom : axioms) {
         int j = derived_predicate_indices[axiom->get_effect().get_predicate_index()];
         for (const auto &literal : axiom->get_conditions()) {
-            int predicate = literal.atom.get_predicate_index();
+            int predicate = literal.get_predicate_index();
             if (!derived_predicate_indices.count(predicate)) {
                 continue;
             }
             int i = derived_predicate_indices.at(predicate);
-            if (literal.negated) {
+            if (literal.is_negated()) {
                 R[i][j] = 2;
             }
             else {

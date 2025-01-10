@@ -140,7 +140,7 @@ public:
     virtual int get_type() const = 0;
 
     const Arguments &get_condition_arguments(int i) const {
-        return conditions[i].atom.get_arguments();
+        return conditions[i].get_arguments();
     }
 
     const Arguments &get_effect_arguments() const {
@@ -190,7 +190,7 @@ public:
     std::vector<int> get_variables_in_body() const {
         std::vector<int> variables;
         for (const DatalogLiteral &literal : conditions) {
-            for (const Term &term : literal.atom.get_arguments()) {
+            for (const Term &term : literal.get_arguments()) {
                 if (!term.is_object()) {
                     variables.push_back(term.get_index());
                 }
@@ -210,7 +210,7 @@ public:
     void set_specific_condition(size_t i, DatalogAtom atom);
 
     void update_condition_arguments(int i, std::vector<Term> &terms) {
-        conditions[i].atom.update_arguments(terms);
+        conditions[i].update_arguments(terms);
     }
 
     void update_effect_arguments(std::vector<Term> &terms) {

@@ -117,7 +117,7 @@ void Datalog::output_rule(const std::unique_ptr<RuleBase> &rule) const {
     }
     for (const auto &condition : rule->get_conditions()) {
         --number_conditions;
-        output_atom(condition.atom);
+        output_atom(condition.get_atom());
         if (number_conditions > 0) {
             cout << ", ";
         }
