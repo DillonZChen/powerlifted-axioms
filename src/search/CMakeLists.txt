@@ -129,6 +129,7 @@ add_executable(search
         heuristics/add_heuristic.h heuristics/utils.h heuristics/utils.cc
         datalog/transformations/remove_equivalent_rules.h datalog/transformations/connected_components.h
         datalog/transformations/variable_projection.h datalog/transformations/variable_renaming.h heuristics/hmax_heuristic.cc heuristics/hmax_heuristic.h
+        axioms/axioms_evaluator.h
         parallel_hashmap/phmap.h)
 
 target_link_libraries(search LINK_PUBLIC ${Boost_LIBRARIES})

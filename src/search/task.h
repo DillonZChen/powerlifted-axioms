@@ -6,6 +6,8 @@
 #include "goal_condition.h"
 #include "object.h"
 #include "predicate.h"
+
+#include "axioms/axioms_evaluator.h"
 #include "states/state.h"
 
 #include <ostream>
@@ -28,6 +30,7 @@
 class Task {
 
     std::vector<std::vector<Axiom>> stratified_axioms;
+    AxiomsEvaluator axioms_evaluator;
     std::vector<ActionSchema> action_schemas;
     GoalCondition goal;
     bool object_creation;
@@ -72,6 +75,8 @@ public:
 
     void initialize_axioms(std::vector<Axiom> &rules);
 
+    void initialize_axiom_evaluator();
+
     const GoalCondition &get_goal() const {
         return goal;
     }
@@ -79,6 +84,11 @@ public:
     const DBState &get_initial_state() const {
         return initial_state;
     }
+
+
+   const std::vector<std::vector<Axiom>> &get_axioms() const {
+        return stratified_axioms;
+   }
 
     void dump_state(DBState s) const;
 

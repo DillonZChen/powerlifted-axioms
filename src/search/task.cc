@@ -138,9 +138,9 @@ void Task::initialize_action_schemas(const std::vector<ActionSchema> &action_lis
 void Task::initialize_axioms(std::vector<Axiom> &axioms)
 {
     /*
-     * Checks whether axioms can be stratified and stratifies them. 
+     * Checks whether axioms can be stratified and stratifies them.
      * Uses Algorithm 1 from Thiebaux et al., IJCAI-03
-     * 
+     *
      * Finishes by extending the initial state with axioms
      */
 
@@ -249,6 +249,11 @@ void Task::initialize_axioms(std::vector<Axiom> &axioms)
 
     dump_axioms();
     // TODO extend initial state with axioms
+}
+
+void Task::initialize_axiom_evaluator() {
+  axioms_evaluator.set_axioms(stratified_axioms);
+  return;
 }
 
 bool Task::is_goal(const DBState &state) const

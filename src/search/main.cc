@@ -87,6 +87,12 @@ int main(int argc, char *argv[]) {
     cout << "IMPORTANT: Assuming that negative effects are always listed first. "
             "(This is guaranteed by the default translator.)" << endl;
 
+    /*
+      TODO: Not sure if we want to do this explicitly here
+      */
+    task.initialize_axiom_evaluator();
+
+
     // Let's create a couple unique_ptr's that deal with mem allocation themselves
     std::unique_ptr<SearchBase> search(SearchFactory::create(opt, opt.get_search_engine()));
     std::unique_ptr<Heuristic> heuristic(HeuristicFactory::create(opt, task));
