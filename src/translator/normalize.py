@@ -2,10 +2,9 @@
 
 import copy
 import sys
+from collections import defaultdict
 
 import pddl
-
-from collections import defaultdict
 
 NOT_EQUAL_PREDICATE = "@not-equal"
 
@@ -440,6 +439,7 @@ def normalize(task):
     eliminate_existential_quantifiers_from_conditional_effects(task)
     normalize_action_costs(task)
     verify_axiom_predicates(task)
+    verify_axiom_variables(task)
 
 def normalize_action_costs(task):
     # If all actions have "None" as cost, then we map it to a unit cost domain.
@@ -475,6 +475,47 @@ def verify_axiom_predicates(task):
                 raise SystemExit(
                     "error: derived predicate %r appears in effect of action %r" %
                     (effect.literal.predicate, action.name))
+
+
+def verify_axiom_variables(task):
+    # When object creation is being used, verify that variables in negated
+    # literals are bound to some other positive literal in each axiom body.
+
+    task_has_object_creation = False
+    for action in task.actions:
+        for effect in action.effects:
+            if isinstance(effect, pddl.effects.ObjectCreationEffect):
+                task_has_object_creation = True
+                break
+        if task_has_object_creation:
+            break
+    if not task_has_object_creation:
+        return
+    
+    for axiom in task.axioms:
+        neg_variables = set()
+        pos_variables = set()
+
+        if isinstance(axiom.condition, pddl.Conjunction):
+            condition = axiom.condition.parts
+        elif isinstance(axiom.condition, pddl.Literal):
+            condition = [axiom.condition]
+        else:
+            raise ValueError(f"Expected axiom condition to be of type Conjunction or Literal but got {type(axiom.condition)}")
+        
+        for literal in condition:
+            assert isinstance(literal, pddl.Atom) or isinstance(literal, pddl.NegatedAtom)
+            variables = literal.args
+            if isinstance(literal, pddl.NegatedAtom):
+                neg_variables.update(variables)
+            else:
+                pos_variables.update(variables)
+
+        unbound_neg_variables = neg_variables - pos_variables
+        if len(unbound_neg_variables) > 0:
+            print("error: variables %r in negated literals are not bound by positive literals in" % (unbound_neg_variables))
+            axiom.dump()
+            raise SystemExit()
 
 
 # [6] Build rules for exploration component.
