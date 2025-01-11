@@ -2,7 +2,6 @@ from __future__ import print_function
 
 import sys
 
-
 # Conditions (of any type) are immutable, because they need to
 # be hashed occasionally. Immutability also allows more efficient comparison
 # based on a precomputed hash value.
@@ -384,3 +383,6 @@ class NegatedAtom(Literal):
         return Atom(self.predicate, self.args)
 
     positive = negate
+
+    def _dump(self):
+        return "~" + str(self)

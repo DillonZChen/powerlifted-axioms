@@ -2,8 +2,7 @@ from __future__ import print_function
 
 import copy
 
-from . import effects
-from . import conditions
+from . import conditions, effects
 
 
 class Action(object):
@@ -40,7 +39,11 @@ class Action(object):
             eff.dump()
         print("Cost:")
         if (self.cost):
-            self.cost.dump()
+            # sometimes cost is just an int
+            try:
+                self.cost.dump()
+            except AttributeError:
+                print("  %s" % self.cost)
         else:
             print("  None")
 
