@@ -251,10 +251,6 @@ void Task::initialize_axioms(std::vector<Axiom> &axioms)
     // TODO extend initial state with axioms
 }
 
-void Task::initialize_axiom_evaluator() {
-  axioms_evaluator.set_axioms(stratified_axioms);
-  return;
-}
 
 bool Task::is_goal(const DBState &state) const
 {

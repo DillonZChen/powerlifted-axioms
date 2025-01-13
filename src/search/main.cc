@@ -90,7 +90,8 @@ int main(int argc, char *argv[]) {
     /*
       TODO: Not sure if we want to do this explicitly here
       */
-    task.initialize_axiom_evaluator();
+    AxiomsEvaluator axioms_evaluator(task.get_axioms(), task.get_static_info());
+    axioms_evaluator.evaluate(task.initial_state);
 
 
     // Let's create a couple unique_ptr's that deal with mem allocation themselves

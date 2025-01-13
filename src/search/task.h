@@ -30,7 +30,6 @@
 class Task {
 
     std::vector<std::vector<Axiom>> stratified_axioms;
-    axioms::AxiomsEvaluator axioms_evaluator;
     std::vector<ActionSchema> action_schemas;
     GoalCondition goal;
     bool object_creation;
@@ -74,8 +73,6 @@ public:
     void initialize_action_schemas(const std::vector<ActionSchema> &action_list);
 
     void initialize_axioms(std::vector<Axiom> &rules);
-
-    void initialize_axiom_evaluator();
 
     const GoalCondition &get_goal() const {
         return goal;

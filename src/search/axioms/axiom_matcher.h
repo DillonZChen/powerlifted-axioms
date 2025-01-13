@@ -3,12 +3,11 @@
 
 #include "../parallel_hashmap/phmap.h"
 
+#include <iostream>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
-
-namespace axioms {
 
 class AxiomMatch {
     int axiom;
@@ -94,7 +93,5 @@ public:
     }
 
 };
-
-} // namespace axioms
 
 #endif //AXIOMS_MATCHER_H_
