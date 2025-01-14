@@ -199,8 +199,11 @@ void CliqueSuccessorGenerator::build_assignment_sets(const DBState &atoms) {
     }
 }
 
-CliqueSuccessorGenerator::CliqueSuccessorGenerator(const Task &task, const CliquePivot &pivot)
-    : GenericJoinSuccessor(task), task(task), pivot(pivot) {
+CliqueSuccessorGenerator::CliqueSuccessorGenerator(const Task &task,
+                                                   const AxiomsEvaluator &axioms_evaluator,
+                                                   const CliquePivot &pivot)
+    : GenericJoinSuccessor(task, axioms_evaluator), task(task), pivot(pivot)
+{
     // Types are static information, precompute the set of object that
     // can be assigned to each parameter based on type information.
 

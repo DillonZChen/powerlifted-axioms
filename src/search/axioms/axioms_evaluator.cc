@@ -1,5 +1,13 @@
 #include "axioms_evaluator.h"
 
+
+DBState AxiomsEvaluator::extend_state(const DBState &state) {
+    DBState new_state = state;
+    std::vector<datalog::DatalogAtom> derived_atoms = evaluate(state);
+    // TODO convert DatalogAtom to Relation, could just be combined with `evaluate` later
+    return new_state;
+}
+
 std::vector<datalog::DatalogAtom> AxiomsEvaluator::evaluate(const DBState &state) {
     std::vector<datalog::DatalogAtom> derived_atoms;
     std::vector<datalog::Fact> facts = get_datalog_facts_from_state(state);

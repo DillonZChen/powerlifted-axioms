@@ -13,7 +13,7 @@ class RandomSuccessorGenerator : public GenericJoinSuccessor {
     std::default_random_engine rng;
 
 public:
-    explicit RandomSuccessorGenerator(const Task &task, unsigned seed);
+    explicit RandomSuccessorGenerator(const Task &task, const AxiomsEvaluator &axioms_evaluator, unsigned seed);
 
     // @see generic_join_successor.h
     bool parse_precond_into_join_program(const PrecompiledActionData &adata,

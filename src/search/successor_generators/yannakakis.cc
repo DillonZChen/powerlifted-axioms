@@ -26,8 +26,10 @@ using namespace std;
  *
  * @param task
  */
-YannakakisSuccessorGenerator::YannakakisSuccessorGenerator(const Task &task)
-    : GenericJoinSuccessor(task) {
+YannakakisSuccessorGenerator::YannakakisSuccessorGenerator(const Task &task,
+                                                           const AxiomsEvaluator &axioms_evaluator)
+    : GenericJoinSuccessor(task, axioms_evaluator)
+{
     /*
       * Apply GYO algorithm for every action schema to check whether it has acyclic precondition/
       *
@@ -162,7 +164,6 @@ YannakakisSuccessorGenerator::YannakakisSuccessorGenerator(const Task &task)
             }
         }
     }
-
 }
 
 void YannakakisSuccessorGenerator::get_distinguished_variables(const ActionSchema &action) {

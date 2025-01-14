@@ -16,32 +16,33 @@
 
 SuccessorGenerator *SuccessorGeneratorFactory::create(const std::string &method,
                                                       unsigned seed,
-                                                      Task &task)
+                                                      Task &task,
+                                                      AxiomsEvaluator &axioms_evaluator)
 {
     std::cout << "Creating successor generator factory..." << std::endl;
     if (boost::iequals(method, "join")) {
-        return new NaiveSuccessorGenerator(task);
+        return new NaiveSuccessorGenerator(task, axioms_evaluator);
     }
     else if (boost::iequals(method, "full_reducer")) {
-        return new FullReducerSuccessorGenerator(task);
+        return new FullReducerSuccessorGenerator(task, axioms_evaluator);
     }
     else if (boost::iequals(method, "inverse_ordered_join")) {
-        return new OrderedJoinSuccessorGenerator<InverseOrderTable>(task);
+        return new OrderedJoinSuccessorGenerator<InverseOrderTable>(task, axioms_evaluator);
     }
     else if (boost::iequals(method, "ordered_join")) {
-        return new OrderedJoinSuccessorGenerator<OrderTable>(task);
+        return new OrderedJoinSuccessorGenerator<OrderTable>(task, axioms_evaluator);
     }
     else if (boost::iequals(method, "random_join")) {
-        return new RandomSuccessorGenerator(task, seed);
+        return new RandomSuccessorGenerator(task, axioms_evaluator, seed);
     }
     else if (boost::iequals(method, "yannakakis")) {
-        return new YannakakisSuccessorGenerator(task);
+        return new YannakakisSuccessorGenerator(task, axioms_evaluator);
     }
     else if (boost::iequals(method, "clique_bk")) {
-        return new CliqueSuccessorGenerator(task, BronKerboschFirst);
+        return new CliqueSuccessorGenerator(task, axioms_evaluator, BronKerboschFirst);
     }
     else if (boost::iequals(method, "clique_kckp")) {
-        return new CliqueSuccessorGenerator(task, KCliqueKPartite);
+        return new CliqueSuccessorGenerator(task, axioms_evaluator, KCliqueKPartite);
     }
     else {
         std::cerr << "Invalid successor generator method \"" << method << "\"" << std::endl;

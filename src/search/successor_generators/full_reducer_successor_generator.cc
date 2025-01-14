@@ -20,8 +20,10 @@ using namespace std;
  *
  * @param task: planning task
  */
-FullReducerSuccessorGenerator::FullReducerSuccessorGenerator(const Task &task)
-    : GenericJoinSuccessor(task) {
+FullReducerSuccessorGenerator::FullReducerSuccessorGenerator(
+    const Task &task, const AxiomsEvaluator &axioms_evaluator)
+    : GenericJoinSuccessor(task, axioms_evaluator)
+{
     /*
      * Apply GYO algorithm for every action schema to check whether it
      * has an acyclic precondition.

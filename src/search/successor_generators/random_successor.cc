@@ -7,9 +7,10 @@
 
 using namespace std;
 
-RandomSuccessorGenerator::RandomSuccessorGenerator(const Task &task, unsigned seed) :
-    GenericJoinSuccessor(task),
-    rng(seed)
+RandomSuccessorGenerator::RandomSuccessorGenerator(const Task &task,
+                                                   const AxiomsEvaluator &axioms_evaluator,
+                                                   unsigned seed)
+    : GenericJoinSuccessor(task, axioms_evaluator), rng(seed)
 {
 }
 

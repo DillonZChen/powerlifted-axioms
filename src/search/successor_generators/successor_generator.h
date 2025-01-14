@@ -2,6 +2,7 @@
 #define SEARCH_SUCCESSOR_GENERATOR_H
 
 #include "../action.h"
+#include "../axioms/axioms_evaluator.h"
 
 #include <vector>
 
@@ -21,8 +22,11 @@ typedef DBState StaticInformation;
  *
  */
 class SuccessorGenerator {
+    AxiomsEvaluator axioms_evaluator;
 
 public:
+    SuccessorGenerator(const AxiomsEvaluator &axioms_evaluator) : axioms_evaluator(axioms_evaluator) {}
+
     virtual ~SuccessorGenerator() = default;
 
     std::vector<std::pair<int, std::vector<int>>> added_atoms;
@@ -39,8 +43,8 @@ public:
     std::vector<LiftedOperatorId> get_applicable_actions(const ActionSchema &action,
                                                          const DBState &state)
     {
-        // TODO extend state with axioms
-        return get_applicable_actions_impl(action, state);
+        const DBState extended_state = axioms_evaluator.extend_state(state);
+        return get_applicable_actions_impl(action, extended_state);
     };
 
     virtual std::vector<LiftedOperatorId> get_applicable_actions_impl(const ActionSchema &action,
@@ -58,8 +62,8 @@ public:
     std::vector<LiftedOperatorId> get_applicable_actions(const std::vector<ActionSchema> &actions,
                                                          const DBState &state)
     {
-        // TODO extend state with axioms
-        return get_applicable_actions_impl(actions, state);
+        const DBState extended_state = axioms_evaluator.extend_state(state);
+        return get_applicable_actions_impl(actions, extended_state);
     }
 
     virtual std::vector<LiftedOperatorId>

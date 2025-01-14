@@ -152,7 +152,9 @@ private:
                                                                   const DBState &state);
 
 public:
-    explicit CliqueSuccessorGenerator(const Task &task, const CliquePivot &pivot);
+    explicit CliqueSuccessorGenerator(const Task &task,
+                                      const AxiomsEvaluator &axioms_evaluator,
+                                      const CliquePivot &pivot);
 
     std::vector<LiftedOperatorId> get_applicable_actions_impl(const std::vector<ActionSchema> &actions,
                                                          const DBState &state) override;

@@ -16,7 +16,7 @@ class OrderedJoinSuccessorGenerator : public GenericJoinSuccessor {
     std::vector<std::vector<int>> precondition_to_order;
 
 public:
-    explicit OrderedJoinSuccessorGenerator(const Task &task);
+    explicit OrderedJoinSuccessorGenerator(const Task &task, const AxiomsEvaluator &axioms_evaluator);
 
     // @see generic_join_successor.h
     bool parse_precond_into_join_program(const PrecompiledActionData &adata,

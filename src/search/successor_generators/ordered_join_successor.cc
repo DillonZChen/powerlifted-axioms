@@ -13,8 +13,10 @@
 using namespace std;
 
 template <typename OrderT>
-OrderedJoinSuccessorGenerator<OrderT>::OrderedJoinSuccessorGenerator(const Task &task)
-    : GenericJoinSuccessor(task) {
+OrderedJoinSuccessorGenerator<OrderT>::OrderedJoinSuccessorGenerator(
+    const Task &task, const AxiomsEvaluator &axioms_evaluator)
+    : GenericJoinSuccessor(task, axioms_evaluator)
+{
     vector<pair<int,int>> to_sort;
     int a_idx = 0;
     assert(action_data.size() == task.get_number_action_schemas());

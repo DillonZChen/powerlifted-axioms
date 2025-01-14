@@ -1,7 +1,10 @@
 #ifndef SEARCH_SUCCESSOR_GENERATOR_FACTORY_H
 #define SEARCH_SUCCESSOR_GENERATOR_FACTORY_H
 
+#include "../axioms/axioms_evaluator.h"
+
 #include <string>
+
 
 class Task;
 class SuccessorGenerator;
@@ -10,7 +13,8 @@ class SuccessorGeneratorFactory {
 public:
     static SuccessorGenerator *create(const std::string &method,
                                       unsigned seed,
-                                      Task &task);
+                                      Task &task,
+                                      AxiomsEvaluator &axioms_evaluator);
 };
 
 

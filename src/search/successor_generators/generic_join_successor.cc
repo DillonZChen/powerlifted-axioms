@@ -15,8 +15,12 @@
 
 using namespace std;
 
-GenericJoinSuccessor::GenericJoinSuccessor(const Task &task)
-    : static_information(task.get_static_info()), is_predicate_static(), action_data()
+GenericJoinSuccessor::GenericJoinSuccessor(const Task &task,
+                                           const AxiomsEvaluator &axioms_evaluator)
+    : SuccessorGenerator(axioms_evaluator),
+      static_information(task.get_static_info()),
+      is_predicate_static(),
+      action_data()
 {
     is_predicate_static.reserve(static_information.get_relations().size());
     for (const auto &r : static_information.get_relations()) {

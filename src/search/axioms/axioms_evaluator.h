@@ -20,7 +20,7 @@ class DBState;
   stratified negation, and don't need anything from annotations, weights, and
   best achievers.
 
-  Therefore, we prefer to pay the price of some "redundant" code to keep thigs
+  Therefore, we prefer to pay the price of some "redundant" code to keep things
   cleaner and more flexible. Conceptually, one could use a generic semi-naive
   evaluation for both cases and then postprocess what is specific for each use
   case. But this would make the code more confusing and slower, so we go with a
@@ -92,6 +92,7 @@ public:
 
     std::vector<datalog::DatalogAtom> evaluate(const DBState &state);
 
+    DBState extend_state(const DBState &state);
 };
 
 #endif // SEARCH_AXIOMS_EVALUATOR_H

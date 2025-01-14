@@ -89,6 +89,9 @@ int main(int argc, char *argv[]) {
 
     /*
       TODO: Not sure if we want to do this explicitly here
+      DZC (14/01/2025): I personally would have preferred the AE in the task so that it can be accessed
+      by the heuristic and successor generator with no additional effort. However, I can also see reasons
+      for why we would want to keep it separate and I don't mind sticking with this since it's changed.
       */
     AxiomsEvaluator axioms_evaluator(task.get_axioms(), task.get_static_info());
     axioms_evaluator.evaluate(task.initial_state);
@@ -99,7 +102,8 @@ int main(int argc, char *argv[]) {
     std::unique_ptr<Heuristic> heuristic(HeuristicFactory::create(opt, task));
     std::unique_ptr<SuccessorGenerator> sgen(SuccessorGeneratorFactory::create(opt.get_successor_generator(),
                                                                                opt.get_seed(),
-                                                                               task));
+                                                                               task,
+                                                                               axioms_evaluator));
 
     PlanManager::set_plan_filename(opt.get_plan_file());
 

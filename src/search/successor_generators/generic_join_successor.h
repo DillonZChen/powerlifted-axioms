@@ -34,7 +34,7 @@ class GenericJoinSuccessor : public SuccessorGenerator {
 
 
 public:
-    explicit GenericJoinSuccessor(const Task &task);
+    explicit GenericJoinSuccessor(const Task &task, const AxiomsEvaluator &axioms_evaluator);
 
     virtual Table instantiate(const ActionSchema &action, const DBState &state);
 
